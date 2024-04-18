@@ -299,7 +299,10 @@ border: none;
 
 .first-left-content{
   grid-column: 1;
-}
+  display: grid;
+  padding: 10px;
+
+  text-align: center;}
 
 .first-left-content img{
   width: 100%;
