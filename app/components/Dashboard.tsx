@@ -217,6 +217,46 @@ export default function Dashboard() {
   };
 
 return (
-<div>Dashboard</div>
+<>
+<div className='hero-grid'>
+  {useArticle
+    .filter((post) => post.id === 'nKtChJP98OpNMPFX6Afn' || post.id === '662oluIkcGSgIqdhYJQc')
+    .map((post) => (
+      <>
+        {post.id === 'nKtChJP98OpNMPFX6Afn' && (
+          <div className='main-content'>
+            <div className='mainflex'>
+              <div style={{ display: 'grid' }}>
+                <h2>{post.catorgory}</h2>
+                <span style={{ fontSize: '24px', lineHeight: '40px' }}>{post.title}</span>
+                <span style={{ lineHeight: '50px', fontSize: '24px' }}>{post.price}</span>
+              </div>
+              <Link href={`/pages/Articles/${post.id}`}>
+                <img src={post.coverimage} className='main-content-img' />
+              </Link>
+            </div>
+          </div>
+        )}
+        {post.id === '662oluIkcGSgIqdhYJQc' && (
+          <div className='first-left-content'>
+            <div>{post.catorgory}</div>
+           <img src={post.coverimage} alt="" />
+        <div>{post.title}</div>
+            
+           <div>{post.price}</div>
+      <button>check it out</button>
+      <button>Quick View</button>
+      <button>Add to Cart</button>
+           
+          </div>
+        )}
+        <div className='second-left-content'>
+          {/* Render content for another product */}
+        </div>
+        {/* Add more divs for additional products */}
+      </>
+    ))}
+</div>
+</>
 )
 }

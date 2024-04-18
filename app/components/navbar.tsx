@@ -168,7 +168,7 @@ setIsOverlayActive(e.target.value.trim().length > 0);
     {searchResults.slice(0, 5).map((result) => (
       <div key={result.id} className="search-result-item">
         <Link key={result.id} href={getLink(result.collection, result.id)}>
-          <p style={{fontWeight:'400'}}>Product: {result.title.length > 20 ? result.title.substring(0, 30) + '...' : result.title}</p>
+          <p style={{fontWeight:'400'}}>Product: {result.title.length > 20 ? result.title.substring(0, 30)  : result.title}...</p>
           <p style={{fontWeight:'400'}}>Price: {result.price}</p>
         </Link>
       </div>

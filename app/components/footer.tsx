@@ -78,7 +78,7 @@ return (
   <ul className="footer-navlink">
     <li><Link href="/pages/Automotive">Automotive & Industrial</Link></li>
     <li><Link href="/pages/Cars">Cars & Trucks</Link></li>
-    <li><Link href="/pages/House">Home & Garden</Link></li>
+    <li><Link href="/pages/Handmade">Handmade</Link></li>
     <li><Link href="/pages/Pets">Pet Supplies</Link></li>
     <li><Link href="/pages/Fitness">Fitness Products</Link></li>
     <li><Link href="/pages/Electronics">Electronics & Gadgets</Link></li>
