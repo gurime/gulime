@@ -231,7 +231,7 @@ return (
                 <span style={{ fontSize: '24px', lineHeight: '40px' }}>{post.title}</span>
                 <span style={{ lineHeight: '50px', fontSize: '24px',color:'#ff0000' }}>{post.price}</span>
               </div>
-              <Link href={`/pages/Articles/${post.id}`}>
+              <Link href={`/pages/Details/${post.id}`}>
                 <img src={post.coverimage} className='main-content-img' />
               </Link>
             </div>
@@ -240,7 +240,7 @@ return (
         {post.id === '662oluIkcGSgIqdhYJQc' && (
           <div className='first-left-content'>
                 <h2>{post.catorgory}</h2>
-                <Link href={`/pages/Articles/${post.id}`}>
+                <Link href={`/pages/Details/${post.id}`}>
 
            <img src={post.coverimage} alt="" />
            </Link>

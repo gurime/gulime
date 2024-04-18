@@ -46,5 +46,5 @@ interface CollectionRoutes {
 [key: string]: string;
 }
 export const collectionRoutes: CollectionRoutes = {
-Dashboard: '/pages/Articles', 
+Dashboard: '/pages/Details', 
 };
