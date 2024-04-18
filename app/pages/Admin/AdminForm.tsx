@@ -136,6 +136,7 @@ if (acceptedCollections.includes(selectedCollection)) {
 switch (selectedCollection) {
 case 'Dashboard':
 router.push('/');
+break;
 default:
 router.push('/not-found');
 break;
