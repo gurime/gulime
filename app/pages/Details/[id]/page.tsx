@@ -3,6 +3,7 @@ import { getArticle } from "../lib";
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import ProductRatings from "@/app/components/ProductRatings";
+import ImageGallery from "@/app/components/HeroFormApi/ImageGallery";
 
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<{ title: string }> {
@@ -34,8 +35,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
     // Fetch article details
     const post: any | null = await getArticle(articleId);
-    const sanitizedPost: any = JSON.parse(JSON.stringify(post));
-    const sanitiPost: any = JSON.parse(JSON.stringify(post));
+   
 
     if (!post) {
         return <div>Product not found</div>;
@@ -43,6 +43,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     const currentDate = new Date();
   const twoDaysAhead = new Date(currentDate.getTime() + (2 * 24 * 60 * 60 * 1000));
   const formattedDate = twoDaysAhead.toLocaleDateString();
+  const images = [post.coverimage, post.imgshowcase1, post.imgshowcase2, post.imgshowcase3, post.imgshowcase4, post.imgshowcase5, post.imgshowcase6, post.imgshowcase7].filter(Boolean);
 
 return (
 <>
@@ -51,29 +52,11 @@ return (
   <div className="article-container">
   
   <div className="product-details">
-  <div className="product-images">
-    <div className="main-image">
-      {post.coverimage && (
-        <img className="cover_image" src={post.coverimage} alt="Property Cover" />
-      )}
-    </div>
-    <div className="thumbnails">
-      {[1, 2, 3, 4, 5, 6, 7].map((index) => {
-        const showcase = post[`imgshowcase${index}`];
-        return showcase && showcase !== '' && (
-          <img
-            key={`imgshowcase${index}`}
-            className={`imgshowcase${index}`}
-            src={showcase}
-            alt={`imgshowcase ${index}`}
-          />
-        );
-      })}
-    </div>
-  </div>
+  <ImageGallery images={images} />
+
   <div className="product-info">
     <h1 className="product-title">{post.title}</h1>
-    <ProductRatings productId={post.id} />
+    <ProductRatings productId={articleId} />
 
     <p className="product-price">{post.price}</p>
     <div className="product-details">
