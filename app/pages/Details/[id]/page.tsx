@@ -64,9 +64,12 @@ return (
         <strong>About this item:</strong>
       </p>
       <ul>
-        <li>{post.content}</li>
-        <li>Bullet point 2</li>
-        <li>Bullet point 3</li>
+      {post.content && <li>{post.content}</li>}
+      {post.content1 && <li>{post.content1}</li>}
+      {post.content2 && <li>{post.content2}</li>}      
+      {post.content3 && <li>{post.content3}</li>}      
+      {post.conten4 && <li>{post.conten4}</li>}
+      {post.conten5 && <li>{post.conten5}</li>}      
       </ul>
     </div>
     <button>Add to cart</button>

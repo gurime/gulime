@@ -219,44 +219,72 @@ export default function Dashboard() {
 return (
 <>
 <div className='hero-grid'>
-  {useArticle
-    .filter((post) => post.id === 'nKtChJP98OpNMPFX6Afn' || post.id === '662oluIkcGSgIqdhYJQc')
-    .map((post) => (
-      <>
-        {post.id === 'nKtChJP98OpNMPFX6Afn' && (
-          <div className='main-content'>
-            <div className='mainflex'>
-              <div style={{ display: 'grid' }}>
-                <h2>{post.catorgory}</h2>
-                <span style={{ fontSize: '24px', lineHeight: '40px' }}>{post.title}</span>
-                <span style={{ lineHeight: '50px', fontSize: '24px',color:'#ff0000' }}>{post.price}</span>
-              </div>
-              <Link href={`/pages/Details/${post.id}`}>
-                <img src={post.coverimage} className='main-content-img' />
-              </Link>
-            </div>
+  {loading ? (
+    <>
+      <div className="main-content">
+        <div className="mainflex">
+          <div style={{ display: 'grid' }}>
+            <Skeleton height={30} />
+            <Skeleton height={40} />
+            <Skeleton height={40} />
           </div>
-        )}
-        {post.id === '662oluIkcGSgIqdhYJQc' && (
-          <div className='first-left-content'>
-                <h2>{post.catorgory}</h2>
-                <Link href={`/pages/Details/${post.id}`}>
-
-           <img src={post.coverimage} alt="" />
-           </Link>
-           <span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>            
-           <div style={{ lineHeight: '50px', fontSize: '24px',color:'#ff0000' }}>{post.price}</div>      <button>check it out</button>
-      <button>Quick View</button>
-      <button>Add to Cart</button>
-           
-          </div>
-        )}
-        <div className='second-left-content'>
-          {/* Render content for another product */}
+          <Skeleton height={200} width={300} />
         </div>
-        {/* Add more divs for additional products */}
-      </>
-    ))}
+      </div>
+      <div className="first-left-content">
+        <Skeleton height={30} />
+        <Skeleton height={200} width={300} />
+        <Skeleton height={30} />
+        <Skeleton height={40} />
+      </div>
+      <div className="second-left-content">
+        {/* Render skeleton loaders for another product */}
+      </div>
+    </>
+  ) : (
+    useArticle
+  .filter((post) => post.id === 'nKtChJP98OpNMPFX6Afn' || post.id === '662oluIkcGSgIqdhYJQc')
+  .map((post) => (
+    <React.Fragment key={post.id}>
+      {post.id === 'nKtChJP98OpNMPFX6Afn' && (
+        <div className="main-content" key={`${post.id}-main-content`}>
+          <div className="mainflex">
+            <div style={{ display: 'grid' }}>
+              <h2>{post.catorgory}</h2>
+              <span style={{ fontSize: '24px', lineHeight: '40px' }}>{post.title}</span>
+              <span style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</span>
+            </div>
+            <Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
+              <img src={post.coverimage} className="main-content-img" alt="" />
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {post.id === '662oluIkcGSgIqdhYJQc' && (
+        <div className="first-left-content" key={`${post.id}-first-left-content`}>
+          <h2>{post.catorgory}</h2>
+          <div>
+            <Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
+              <img src={post.coverimage} alt="" />
+            </Link>
+          </div>
+          <span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
+          <div style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
+        </div>
+      )}
+
+      <div className="second-left-content" key={`${post.id}-second-left-content`}>
+        {/* Render content for another product */}
+      </div>
+      <div className="first-right-content" key={`${post.id}-first-right-content`}>
+        {/* Render content for another product */}
+      </div>
+
+      {/* Add more divs for additional products */}
+    </React.Fragment>
+  ))
+  )}
 </div>
 </>
 )

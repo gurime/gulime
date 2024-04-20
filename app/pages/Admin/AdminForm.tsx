@@ -15,6 +15,11 @@ lastName: string;
 
 const AdminForm: React.FC = () => {
 const [content, setContent] = useState<string>('');
+const [content1, setContent1] = useState<string>('');
+const [content2, setContent2] = useState<string>('');
+const [content3, setContent3] = useState<string>('');
+const [content4, setContent4] = useState<string>('');
+const [content5, setContent5] = useState<string>('');
 const [title, setTitle] = useState<string>('');
 const [price, setPrice] = useState<string>('');
 // Pictures
@@ -119,6 +124,11 @@ const db = getFirestore();
 const docRef = await addDoc(collection(db, selectedCollection), {
 userId: user?.uid,
 content,
+content1,
+content2,
+content3,
+content4,
+content5,
 catorgory,
 title,
 price,
@@ -368,15 +378,56 @@ onChange={handleFileChange(setimg_Showcase4)}/>
 <h2>Product Details</h2>
 </div>
 
-<div className="sm-adminform" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly' }}>
-<div style={{ display: 'grid', gap: '1rem', width: '100%' }}>
+<div className="sm-adminform" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-evenly',flexWrap:'wrap' }}>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem'}}>
 <textarea
 rows={10}
-placeholder="Enter Product Details..."
+placeholder="First Bullet Point"
 value={content}
 onChange={(e) => setContent(e.target.value)}>
 </textarea>
 </div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="Second Bullet Point"
+value={content1}
+onChange={(e) => setContent1(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="Third Bullet Point"
+value={content2}
+onChange={(e) => setContent2(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="Fourth Bullet Point"
+value={content3}
+onChange={(e) => setContent3(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="Fifth Bullet Point"
+value={content4}
+onChange={(e) => setContent4(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="Sixth Bullet Point"
+value={content5}
+onChange={(e) => setContent5(e.target.value)}>
+</textarea>
+</div>
+
 </div>
 <hr />
 
