@@ -7,7 +7,7 @@ import navlogo from '../img/gulime.png'
 import Footer from './footer';
 import { FaShoppingCart } from 'react-icons/fa';
 import { collectionRoutes, getArticle } from './HeroFormApi/api';
-import { collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 
 type SearchResult = {
@@ -15,7 +15,13 @@ type SearchResult = {
     collection: string;
     price:string;
     id: string;
+    
   };
+
+  interface CartItem {
+    id: string;
+    // Add other properties here as needed
+  }
 
 export default function Navbar() {
     const router = useRouter()
@@ -25,7 +31,8 @@ export default function Navbar() {
     const [isOverlayActive, setIsOverlayActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [names, setNames] = useState<string[]>([]);
-    
+    const [cart, setCart] = useState<CartItem[]>([]); // Local cart state
+
     const [loading, setLoading] = useState<boolean>(true);
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     
@@ -130,6 +137,22 @@ export default function Navbar() {
     const toggleFooter = () => {
     setIsFooterVisible(!isFooterVisible);
     };
+
+    const fetchCartData = () => {
+      const cartCollectionRef = collection(db, "Cart");
+      const unsubscribe = onSnapshot(cartCollectionRef, (snapshot) => {
+        const cartData: CartItem[] = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setCart(cartData);
+      });
+    
+      // Clean up the listener when the component unmounts
+      return unsubscribe;
+    };
+
+    useEffect(() => {
+      const unsubscribe = fetchCartData();
+      return unsubscribe;
+    }, []);
 return (
 <>
 <div className="nav">
@@ -206,8 +229,12 @@ Guest
 <Link href="/pages/Fashion">Fashion</Link>
 <Link href="/pages/Sports">Sports</Link>
 <Link href='#!' onClick={toggleFooter}>More:</Link>
-<Link href='#!'><FaShoppingCart style={{fontSize:'24px',color:'#fff',padding:'0 5px 0 0'}}/>cart</Link>
-
+<Link href='/pages/Cart' className="cart-link">
+  <div className="cart-icon-container">
+    <FaShoppingCart style={{ fontSize: '24px', color: '#fff', padding: '0 5px 0 0' }} />
+    <span className="cart-count">{cart.length}</span>
+  </div>
+</Link>
 </div>
 
 

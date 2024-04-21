@@ -3,7 +3,8 @@ import { getArticle } from "../lib";
 import Navbar from "@/app/components/navbar";
 import Footer from "@/app/components/footer";
 import ProductRatings from "@/app/components/ProductRatings";
-import ImageGallery from "@/app/components/HeroFormApi/ImageGallery";
+import ImageGallery from "@/app/components/ImageGallery";
+import ContentDisplay from "@/app/components/ContentDisplay";
 
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<{ title: string }> {
@@ -59,17 +60,27 @@ return (
     <ProductRatings productId={articleId} />
 
     <p className="product-price">{post.price}</p>
+
+    
     <div className="product-details">
-      <p>
+       <p>
         <strong>About this item:</strong>
       </p>
+    
       <ul>
-      {post.content && <li>{post.content}</li>}
-      {post.content1 && <li>{post.content1}</li>}
-      {post.content2 && <li>{post.content2}</li>}      
-      {post.content3 && <li>{post.content3}</li>}      
-      {post.conten4 && <li>{post.conten4}</li>}
-      {post.conten5 && <li>{post.conten5}</li>}      
+      <ContentDisplay
+  content={post.content}
+  content1={post.content1}
+  content2={post.content2}
+  content3={post.content3}
+  content4={post.content4}
+  content5={post.content5}
+  content6={post.content6}
+  content7={post.content7}
+  content8={post.content8}
+  content9={post.content9}
+  content10={post.content10}
+/>    
       </ul>
     </div>
     <button>Add to cart</button>

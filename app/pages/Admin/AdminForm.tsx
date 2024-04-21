@@ -20,6 +20,11 @@ const [content2, setContent2] = useState<string>('');
 const [content3, setContent3] = useState<string>('');
 const [content4, setContent4] = useState<string>('');
 const [content5, setContent5] = useState<string>('');
+const [content6, setContent6] = useState<string>('');
+const [content7, setContent7] = useState<string>('');
+const [content8, setContent8] = useState<string>('');
+const [content9, setContent9] = useState<string>('');
+const [content10, setContent10] = useState<string>('');
 const [title, setTitle] = useState<string>('');
 const [price, setPrice] = useState<string>('');
 // Pictures
@@ -129,6 +134,11 @@ content2,
 content3,
 content4,
 content5,
+content6,
+content7,
+content8,
+content9,
+content10,
 catorgory,
 title,
 price,
@@ -425,6 +435,46 @@ rows={10}
 placeholder="Sixth Bullet Point"
 value={content5}
 onChange={(e) => setContent5(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="seventh Bullet Point"
+value={content6}
+onChange={(e) => setContent6(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="eigth Bullet Point"
+value={content7}
+onChange={(e) => setContent7(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="ninth Bullet Point"
+value={content8}
+onChange={(e) => setContent8(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="tenth Bullet Point"
+value={content9}
+onChange={(e) => setContent9(e.target.value)}>
+</textarea>
+</div>
+<div style={{ display: 'grid', gap: '1rem', width: '100%',marginBottom:'1rem' }}>
+<textarea
+rows={10}
+placeholder="eleventh Bullet Point"
+value={content10}
+onChange={(e) => setContent10(e.target.value)}>
 </textarea>
 </div>
 

@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, getFirestore, orderBy, query, updateDoc, where } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, orderBy, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { auth, db } from '@/app/firebase/firebase';
 import { useRouter } from 'next/navigation';
 import Skeleton from 'react-loading-skeleton';
@@ -216,6 +216,35 @@ export default function Dashboard() {
     }
   };
 
+  const handleAddToCart = async (article: Article) => {
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const db = getFirestore();
+        const cartRef = doc(db, 'Cart', currentUser.uid);
+        const cartData = {
+          userId: currentUser.uid,
+          items: [{
+            id: article.id,
+            title: article.title,
+            price: article.price,
+            coverimage: article.coverimage,
+            // Add any other relevant properties
+          }]
+        };
+  
+        await setDoc(cartRef, cartData, { merge: true });
+        console.log('Item added to cart successfully!');
+        router.push('/pages/Cart'); // Navigate to the cart page
+      } else {
+        console.log('User not authenticated');
+      }
+    } catch (error) {
+      console.error('Error adding item to cart:', error);
+    }
+  };
+
 return (
 <>
 <div className='hero-grid'>
@@ -242,49 +271,52 @@ return (
       </div>
     </>
   ) : (
-    useArticle
-  .filter((post) => post.id === 'nKtChJP98OpNMPFX6Afn' || post.id === '662oluIkcGSgIqdhYJQc')
-  .map((post) => (
-    <React.Fragment key={post.id}>
-      {post.id === 'nKtChJP98OpNMPFX6Afn' && (
-        <div className="main-content" key={`${post.id}-main-content`}>
-          <div className="mainflex">
-            <div style={{ display: 'grid' }}>
-              <h2>{post.catorgory}</h2>
-              <span style={{ fontSize: '24px', lineHeight: '40px' }}>{post.title}</span>
-              <span style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</span>
-            </div>
-            <Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
-              <img src={post.coverimage} className="main-content-img" alt="" />
-            </Link>
-          </div>
-        </div>
-      )}
+useArticle
+.filter((post) => post.id === 'aNvAEn3uhvs9BDUhbikF' || post.id === '662oluIkcGSgIqdhYJQc')
+.map((post) => (
+<React.Fragment key={post.id}>
+{post.id === 'aNvAEn3uhvs9BDUhbikF' && (
+<div className="main-content" key={`${post.id}-main-content`}>
+<div className="mainflex">
+<div style={{ display: 'grid' }}>
+<h2>{post.catorgory}</h2>
+<span style={{ fontSize: '17px', lineHeight: '40px' }}>{post.title}</span>
+<span style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</span>
+</div>
+<Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
+<img src={post.coverimage} className="main-content-img" alt="" />
+</Link>
+</div>
+</div>
+)}
 
-      {post.id === '662oluIkcGSgIqdhYJQc' && (
-        <div className="first-left-content" key={`${post.id}-first-left-content`}>
-          <h2>{post.catorgory}</h2>
-          <div>
-            <Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
-              <img src={post.coverimage} alt="" />
-            </Link>
-          </div>
-          <span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
-          <div style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
-        </div>
-      )}
+{post.id === '662oluIkcGSgIqdhYJQc' && (
+<div className="first-left-content" key={`${post.id}-first-left-content`}>
+<h2>{post.catorgory}</h2>
+<div>
+<Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
+<img src={post.coverimage} alt="" />
+</Link>
+</div>
+<span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
+<div style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
+<div>
+<button onClick={() => handleAddToCart(post)}>Add to cart</button>
+</div>
+</div>
+)}
 
-      <div className="second-left-content" key={`${post.id}-second-left-content`}>
-        {/* Render content for another product */}
-      </div>
-      <div className="first-right-content" key={`${post.id}-first-right-content`}>
-        {/* Render content for another product */}
-      </div>
+<div className="second-left-content" key={`${post.id}-second-left-content`}>
+{/* Render content for another product */}
+</div>
+<div className="first-right-content" key={`${post.id}-first-right-content`}>
+{/* Render content for another product */}
+</div>
 
-      {/* Add more divs for additional products */}
-    </React.Fragment>
-  ))
-  )}
+{/* Add more divs for additional products */}
+</React.Fragment>
+))
+)}
 </div>
 </>
 )
