@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
     const currentDate = new Date();
   const twoDaysAhead = new Date(currentDate.getTime() + (2 * 24 * 60 * 60 * 1000));
   const formattedDate = twoDaysAhead.toLocaleDateString();
-  const images = [post.coverimage, post.imgshowcase1, post.imgshowcase2, post.imgshowcase3, post.imgshowcase4, post.imgshowcase5, post.imgshowcase6, post.imgshowcase7].filter(Boolean);
+  const images = [post.coverimage, post.imgshowcase, post.imgshowcase1, post.imgshowcase2, post.imgshowcase3, post.imgshowcase4, post.imgshowcase5, post.imgshowcase6, post.imgshowcase7].filter(Boolean);
 
 return (
 <>
