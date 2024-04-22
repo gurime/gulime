@@ -5,6 +5,8 @@ import Footer from "@/app/components/footer";
 import ProductRatings from "@/app/components/ProductRatings";
 import ImageGallery from "@/app/components/ImageGallery";
 import ContentDisplay from "@/app/components/ContentDisplay";
+import AddtocartBtn from "@/app/components/AddtocartBtn";
+
 
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<{ title: string }> {
@@ -32,6 +34,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
 
   export default async function DetailsPage({ params }: { params: { id: string } }): Promise<JSX.Element> {
+
     const articleId: string = params.id;
 
     // Fetch article details
@@ -45,6 +48,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
   const twoDaysAhead = new Date(currentDate.getTime() + (2 * 24 * 60 * 60 * 1000));
   const formattedDate = twoDaysAhead.toLocaleDateString();
   const images = [post.coverimage, post.imgshowcase, post.imgshowcase1, post.imgshowcase2, post.imgshowcase3, post.imgshowcase4, post.imgshowcase5, post.imgshowcase6, post.imgshowcase7].filter(Boolean);
+
 
 return (
 <>
@@ -83,7 +87,7 @@ return (
 />    
       </ul>
     </div>
-    <button>Add to cart</button>
+<AddtocartBtn post={post}/>
     <div className="product-delivery">
       <p>
       

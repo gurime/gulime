@@ -26,13 +26,7 @@ interface Article {
     timestamp: string;
   }
 
-  function updateComment(postId: string, editedContent: string) {
-    throw new Error('Function not implemented.');
-  }
-  
-  function checkIfUserIsAdmin(user: User) {
-    throw new Error('Function not implemented.');
-  }
+
   
   async function getArticles(): Promise<Article[]> {
     try {
@@ -75,10 +69,7 @@ export default function Dashboard() {
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [comments, setComments] = useState<any[]>([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editingComment, setEditingComment] = useState<any>(null);
-  const [unauthorizedModalOpen, setUnauthorizedModalOpen ] = useState<boolean>(false)
+
   const router = useRouter();
   const commentsRef = useRef<HTMLDivElement>(null);
 
@@ -161,60 +152,7 @@ export default function Dashboard() {
       unsubscribe();
     };
   }, []); 
-  const editPost = async (postId: string, userId: string, isAdmin: boolean) => {
-    const listingToEdit = useArticle.find((listing) => listing.id === postId);
-  
-    if (listingToEdit) {
-      const isAuthenticated = await userIsAuthenticated();
-  
-      if (isAdmin) {
-        // Admin can edit any post
-        setEditingComment(listingToEdit);
-        setEditModalOpen(true);
-      } else if (isAuthenticated) {
-        const auth = getAuth();
-        const currentUser = auth.currentUser;
-  
-        if (currentUser && currentUser.uid === listingToEdit.userId) {
-          // Regular user can edit their own post
-          setEditingComment(listingToEdit);
-          setEditModalOpen(true);
-        } else {
-          // Show modal or error message for unauthorized access
-          setUnauthorizedModalOpen(true);
-        }
-      } else {
-        // User is not authenticated
-        // Show modal or error message for unauthorized access
-        setUnauthorizedModalOpen(true);
-      }
-    } else {
-      setErrorMessage('Listing not found');
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
-    }
-  };
 
-  const handleEditModalSave = async (postId: string, editedContent: string) => {
-    try {
-      updateComment(postId, editedContent);
-
-      setUseArticle((prevArticles) =>
-        prevArticles.map((article) =>
-          article.id === postId ? { ...article, content: editedContent, bodycontent: editedContent, endcontent: editedContent } : article
-        )
-      );
-
-      setEditModalOpen(false); 
-
-    } catch (error) {
-      setErrorMessage('Error saving Listing. Please try again.');
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
-    }
-  };
 
   const handleAddToCart = async (article: Article) => {
     try {
