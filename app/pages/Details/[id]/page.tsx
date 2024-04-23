@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
 
     // Fetch article details
     const post: any | null = await getArticle(articleId);
-   
+
 
     if (!post) {
         return <div>Product not found</div>;
@@ -57,7 +57,7 @@ return (
   <div className="article-container">
   
   <div className="product-details">
-  <ImageGallery images={images} />
+  <ImageGallery images={images}  />
 
   <div className="product-info">
     <h1 className="product-title">{post.title}</h1>

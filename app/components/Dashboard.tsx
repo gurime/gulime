@@ -210,7 +210,7 @@ return (
     </>
   ) : (
 useArticle
-.filter((post) => post.id === 'aNvAEn3uhvs9BDUhbikF' || post.id === '662oluIkcGSgIqdhYJQc')
+.filter((post) => post.id === 'aNvAEn3uhvs9BDUhbikF' || post.id === '662oluIkcGSgIqdhYJQc' || post.id  === 'kVO4Bvo3xiG8Plw9rx2n')
 .map((post) => (
 <React.Fragment key={post.id}>
 {post.id === 'aNvAEn3uhvs9BDUhbikF' && (
@@ -243,13 +243,26 @@ useArticle
 </div>
 </div>
 )}
+{post.id === 'kVO4Bvo3xiG8Plw9rx2n' && (
 
 <div className="second-left-content" key={`${post.id}-second-left-content`}>
-{/* Render content for another product */}
+<h2>{post.catorgory}</h2>
+<div>
+<Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
+<img src={post.coverimage} alt="" />
+</Link>
 </div>
-<div className="first-right-content" key={`${post.id}-first-right-content`}>
-{/* Render content for another product */}
+<span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
+<div style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
+<div>
+<button onClick={() => handleAddToCart(post)}>Add to cart</button>
 </div>
+</div>
+)}
+
+
+
+
 
 {/* Add more divs for additional products */}
 </React.Fragment>

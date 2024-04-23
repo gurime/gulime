@@ -3,6 +3,7 @@ import { useState, Key } from 'react';
 
 interface ImageGalleryProps {
   images: (string | undefined)[];
+
 }
 
 function ImageGallery({ images }: ImageGalleryProps) {
