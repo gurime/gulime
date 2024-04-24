@@ -7,7 +7,7 @@ import Footer from '@/app/components/footer'
 
 
 export const metadata: Metadata = {
-    title: 'Gulime - Cart'
+    title: 'Gulime.com - Shopping Cart'
  
     }
 

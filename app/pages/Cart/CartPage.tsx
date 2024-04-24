@@ -41,6 +41,21 @@ const CartPage = () => {
     };
     fetchCartItems();
   }, [currentUser]);
+
+  useEffect(() => {
+    const fetchCartItems = async () => {
+      if (currentUser) {
+        const db = getFirestore();
+        const cartRef = doc(db, 'Saved', currentUser.uid);
+        const cartDoc = await getDoc(cartRef);
+        if (cartDoc.exists()) {
+          const cartData = cartDoc.data();
+          setSavedItems(cartData.items || []);
+        }
+      }
+    };
+    fetchCartItems();
+  }, [currentUser]);
   const handleAddToCart = async (newItem: CartItem) => {
     if (currentUser) {
       const db = getFirestore();
@@ -129,7 +144,7 @@ const CartPage = () => {
     try {
     if (currentUser) {
     const db = getFirestore();
-    const cartRef = doc(db, 'Cart', currentUser.uid);
+    const cartRef = doc(db, 'Saved', currentUser.uid);
     await deleteDoc(cartRef);
     setCartItems([]);
     }
@@ -155,7 +170,7 @@ const CartPage = () => {
             <img
               src={item.coverimage}
               alt={item.title}
-      width={250}
+      width={170}
               className="cart-image"
             />
             <div className="cart-item-details">
@@ -164,9 +179,11 @@ const CartPage = () => {
               <p className="cart-item-quantity">Quantity: 1</p>
             </div>
           </div>
-          <div className="cart-item-actions">
+          <div className="cart-item-actions">           
+          <button className="cart-item-remove" onClick={() => Delete(item.id)}>Delete</button>
+
+
             <button className="cart-item-remove" onClick={() => handleSaveForLater(item.id)}>Save for Later</button>
-            <button className="cart-item-remove" onClick={() => Delete(item.id)}>Delete</button>
           </div>
         </li>
       ))}
@@ -193,7 +210,7 @@ const CartPage = () => {
           </div>
         </div>
         <div className="saved-item-actions">
-          <button className="saved-item-delete" onClick={() => handleDelete(item.id)}>Delete</button>
+          <button className="saved-item-delete" onClick={() => Delete(item.id)}>Delete</button>
           <button className="saved-item-add-to-cart" onClick={() => handleAddToCart(item)}>Add to cart</button>
         </div>
       </li>

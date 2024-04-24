@@ -1,7 +1,7 @@
 'use client'
 
 import { getAuth } from 'firebase/auth';
-import { doc, getFirestore, setDoc } from 'firebase/firestore';
+import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import React from 'react'
 
@@ -29,24 +29,39 @@ export default function AddToCartBtn({ post }: { post: Article }) {
     try {
       const auth = getAuth();
       const currentUser = auth.currentUser;
-
+  
       if (currentUser) {
         const db = getFirestore();
         const cartRef = doc(db, 'Cart', currentUser.uid);
-        const cartData = {
-          userId: currentUser.uid,
-          items: [
-            {
-              id: article.id || '',
-              title: article.title || '',
-              price: article.price || '',
-              coverimage: article.coverimage || '',
-              // Add any other relevant properties with default values
-            }
-          ]
-        };
-
-        await setDoc(cartRef, cartData, { merge: true });
+        const cartData = await getDoc(cartRef);
+  
+        if (cartData.exists()) {
+          const existingItems = cartData.data().items;
+          existingItems.push({
+            id: article.id || '',
+            title: article.title || '',
+            price: article.price || '',
+            coverimage: article.coverimage || '',
+            // Add any other relevant properties with default values
+          });
+          await setDoc(cartRef, { items: existingItems }, { merge: true });
+        } else {
+          // If the cart document doesn't exist, create a new one
+          const newCartData = {
+            userId: currentUser.uid,
+            items: [
+              {
+                id: article.id || '',
+                title: article.title || '',
+                price: article.price || '',
+                coverimage: article.coverimage || '',
+                // Add any other relevant properties with default values
+              }
+            ]
+          };
+          await setDoc(cartRef, newCartData);
+        }
+  
         console.log('Item added to cart successfully!');
         router.push('/pages/Cart'); // Navigate to the cart page
       } else {
@@ -56,7 +71,6 @@ export default function AddToCartBtn({ post }: { post: Article }) {
       console.error('Error adding item to cart:', error);
     }
   };
-
   return (
     <>
       <button onClick={() => handleAddToCart(post)}>Add to cart</button>
