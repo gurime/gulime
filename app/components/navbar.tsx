@@ -7,21 +7,18 @@ import navlogo from '../img/gulime.png'
 import Footer from './footer';
 import { FaShoppingCart } from 'react-icons/fa';
 import { collectionRoutes, getArticle } from './HeroFormApi/api';
-import { collection, doc, getDoc, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
+import { getAuth } from 'firebase/auth';
 
 type SearchResult = {
     title: string;
     collection: string;
     price:string;
     id: string;
-    
   };
 
-  interface CartItem {
-    id: string;
-    // Add other properties here as needed
-  }
+
 
 export default function Navbar() {
     const router = useRouter()
@@ -31,9 +28,8 @@ export default function Navbar() {
     const [isOverlayActive, setIsOverlayActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [names, setNames] = useState<string[]>([]);
-    const [cart, setCart] = useState<CartItem[]>([]); // Local cart state
-
-    const [loading, setLoading] = useState<boolean>(true);
+    const [cartCount, setCartCount] = useState<number>(0);
+        const [loading, setLoading] = useState<boolean>(true);
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     
     const overlayStyle: React.CSSProperties = {
@@ -137,54 +133,58 @@ export default function Navbar() {
     const toggleFooter = () => {
     setIsFooterVisible(!isFooterVisible);
     };
-
-    const fetchCartData = () => {
-      const cartCollectionRef = collection(db, "Cart");
-      const unsubscribe = onSnapshot(cartCollectionRef, (snapshot) => {
-        const cartData: CartItem[] = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-        setCart(cartData);
-      });
-    
-      // Clean up the listener when the component unmounts
-      return unsubscribe;
-    };
-
     useEffect(() => {
+      const fetchCartData = () => {
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+        
+        if (currentUser) {
+          const db = getFirestore();
+          const cartRef = doc(db, "Cart", currentUser.uid);
+          
+          const unsubscribe = onSnapshot(cartRef, (snapshot) => {
+            const cartData = snapshot.data();
+            let totalItems = 0;
+            
+            if (cartData && cartData.items) {
+              totalItems = cartData.items.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+            }
+            
+            setCartCount(totalItems);
+          });
+          
+          // Clean up the listener when the component unmounts
+          return unsubscribe;
+        }
+      };
+    
       const unsubscribe = fetchCartData();
       return unsubscribe;
     }, []);
+    
+  
 return (
 <>
 <div className="nav">
 <Image placeholder="blur" onClick={() => router.push('/')} src={navlogo} height={36} alt='...' />
 
-<div style={{
-position: 'fixed',
-top: 0,
-left: 0,
-width: '100%',
-height: '100%',
-background: '#000',
-opacity: 0.6,
-display: isOverlayActive ? 'block' : 'none',
-pointerEvents: 'none',
-}
-}>
+<div style={overlayStyle}>
 </div>
 <form style={{ width: '100%',position:'relative',  }} onSubmit={handleSearch}>
 <input
-placeholder="Search iTruth News"
-type="search"
-spellCheck="false"
-dir="auto"
-tabIndex={0}
-value={searchTerm}
-onChange={(e) => {
-setSearchTerm(e.target.value);
-{handleSearch}
-{handleSearchInputChange}
-setIsOverlayActive(e.target.value.trim().length > 0);
-}}/>
+  placeholder="Search Gulime"
+  type="search"
+  spellCheck="false"
+  dir="auto"
+  tabIndex={0}
+  value={searchTerm}
+  onChange={(e) => {
+    setSearchTerm(e.target.value);
+    handleSearch();
+    handleSearchInputChange(e);
+    setIsOverlayActive(e.target.value.trim().length > 0);
+  }}
+/>
 
 {searchResults.length > 0 && searchTerm && !loading && (
   <div className="search-results-container">
@@ -232,8 +232,9 @@ Guest
 <Link href='/pages/Cart' className="cart-link">
   <div className="cart-icon-container">
     <FaShoppingCart style={{ fontSize: '24px', color: '#fff', padding: '0 5px 0 0' }} />
-    <span className="cart-count">{cart.length}</span>
-  </div>
+    <span className="cart-count">{cartCount !== undefined ? cartCount : ''}</span>
+
+</div>
 </Link>
 </div>
 

@@ -14,7 +14,7 @@ interface Article {
     id: string;
     title: string;
     content: string;
-    price: string;
+    price: number;
     imgshowcase:string;
     imgshowcase1:string
     imgshowcase2:string
@@ -155,33 +155,63 @@ export default function Dashboard() {
 
 
   const handleAddToCart = async (article: Article) => {
-  try {
-    const auth = getAuth();
-    const currentUser = auth.currentUser;
-    const db = getFirestore();
-
-    if (currentUser) {
-      const cartRef = doc(db, 'Cart', currentUser.uid);
-      const itemRef = doc(cartRef, 'items', article.id);
-
-      await setDoc(itemRef, {
-        id: article.id,
-        title: article.title,
-        price: article.price,
-        coverimage: article.coverimage,
-        // Add any other relevant properties
-      });
-
-      console.log('Item added to cart successfully!');
-      router.push('/pages/Cart'); // Navigate to the cart page
-    } else {
-      console.log('User not authenticated');
+    try {
+      const auth = getAuth();
+      const currentUser = auth.currentUser;
+      const db = getFirestore();
+  
+      if (currentUser) {
+        const cartRef = doc(db, 'Cart', currentUser.uid);
+        const cartDoc = await getDoc(cartRef);
+  
+        if (cartDoc.exists()) {
+          const cartData = cartDoc.data();
+          let items = cartData.items || [];
+  
+          // Check if the item already exists in the cart
+          const existingItemIndex = items.findIndex(
+            (item: Article) => item.id === article.id
+          );
+  
+          if (existingItemIndex !== -1) {
+            // If the item already exists, update its quantity
+            items[existingItemIndex].quantity += 1;
+          } else {
+            // If the item doesn't exist, add it to the items array
+            items.push({
+              id: article.id,
+              title: article.title,
+              price: article.price,
+              coverimage: article.coverimage,
+              quantity: 1,
+            });
+          }
+  
+          await updateDoc(cartRef, { items });
+          router.push('/pages/Cart');
+        } else {
+          // If the cart document doesn't exist, create a new one with the first item
+          await setDoc(cartRef, {
+            items: [
+              {
+                id: article.id,
+                title: article.title,
+                price: article.price,
+                coverimage: article.coverimage,
+                quantity: 1,
+              },
+            ],
+          });
+          router.push('/pages/Cart');
+        }
+      } else {
+        // Handle the case where the user is not logged in
+      }
+    } catch (error) {
+      // Handle any errors that occur
+      console.error('Error adding item to cart:', error);
     }
-  } catch (error) {
-    console.error('Error adding item to cart:', error);
-  }
-};
-
+  };
 return (
 <>
 <div className='hero-grid'>

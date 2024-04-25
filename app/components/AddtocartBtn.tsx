@@ -1,25 +1,18 @@
 'use client'
 
 import { getAuth } from 'firebase/auth';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { doc, getDoc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { v4 as uuidv4 } from 'uuid';
 import React from 'react'
 
 interface Article {
-  userId: string;
-  propertyType: string;
   id: string;
   title: string;
-  content: string;
-  price: string;
-  imgshowcase: string;
-  imgshowcase1: string
-  imgshowcase2: string
-  imgshowcase3: string
-  imgshowcase4: string
+  price: number;
   coverimage: string;
-  catorgory: string;
-  timestamp: string;
+  savedForLater: boolean;
+  quantity?: number; // Make quantity optional
 }
 
 export default function AddToCartBtn({ post }: { post: Article }) {
@@ -29,43 +22,52 @@ export default function AddToCartBtn({ post }: { post: Article }) {
     try {
       const auth = getAuth();
       const currentUser = auth.currentUser;
+      const db = getFirestore();
   
       if (currentUser) {
-        const db = getFirestore();
         const cartRef = doc(db, 'Cart', currentUser.uid);
-        const cartData = await getDoc(cartRef);
+        const cartDoc = await getDoc(cartRef);
   
-        if (cartData.exists()) {
-          const existingItems = cartData.data().items;
-          existingItems.push({
-            id: article.id || '',
-            title: article.title || '',
-            price: article.price || '',
-            coverimage: article.coverimage || '',
-            // Add any other relevant properties with default values
-          });
-          await setDoc(cartRef, { items: existingItems }, { merge: true });
+        if (cartDoc.exists()) {
+          const cartData = cartDoc.data();
+          let items = cartData.items || [];
+  
+          const existingItemIndex = items.findIndex(
+            (item: Article) => item.id === article.id
+          );
+  
+          if (existingItemIndex !== -1) {
+            items[existingItemIndex].quantity = (items[existingItemIndex].quantity || 0) + 1;
+          } else {
+            const newItemId = article.id || uuidv4();
+            items.push({
+              id: newItemId,
+              title: article.title || '',
+              price: article.price || 0,
+              coverimage: article.coverimage || '',
+              quantity: 1,
+            });
+          }
+  
+          await updateDoc(cartRef, { items });
+          router.push('/pages/Cart');
         } else {
-          // If the cart document doesn't exist, create a new one
-          const newCartData = {
-            userId: currentUser.uid,
+          const newItemId = article.id || uuidv4();
+          await setDoc(cartRef, {
             items: [
               {
-                id: article.id || '',
+                id: newItemId,
                 title: article.title || '',
-                price: article.price || '',
+                price: article.price || 0,
                 coverimage: article.coverimage || '',
-                // Add any other relevant properties with default values
-              }
-            ]
-          };
-          await setDoc(cartRef, newCartData);
+                quantity: 1,
+              },
+            ],
+          });
+          router.push('/pages/Cart');
         }
-  
-        console.log('Item added to cart successfully!');
-        router.push('/pages/Cart'); // Navigate to the cart page
       } else {
-        console.log('User not authenticated');
+        // Handle the case where the user is not logged in
       }
     } catch (error) {
       console.error('Error adding item to cart:', error);
@@ -75,5 +77,5 @@ export default function AddToCartBtn({ post }: { post: Article }) {
     <>
       <button onClick={() => handleAddToCart(post)}>Add to cart</button>
     </>
-  )
+  );
 }

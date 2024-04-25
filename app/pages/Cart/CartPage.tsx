@@ -1,17 +1,17 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '@/app/firebase/firebase'; // Assuming this import is correct
+import { collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, setDoc, updateDoc } from 'firebase/firestore';
+import { db } from '@/app/firebase/firebase';
 import Link from 'next/link';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 interface CartItem {
   id: string;
   title: string;
-  price: string;
+  price: number;
   coverimage: string;
   savedForLater: boolean;
-  quantity:number;
+  quantity: number;
 }
 
 const CartPage = () => {
@@ -23,39 +23,35 @@ const CartPage = () => {
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
+
+      if (user) {
+        const db = getFirestore();
+        const cartRef = doc(db, 'Cart', user.uid);
+        const savedRef = doc(db, 'Saved', user.uid);
+
+        // Listen for changes in the "Cart" collection
+        const unsubscribeCart = onSnapshot(cartRef, (snapshot) => {
+          const cartData = snapshot.data();
+          setCartItems(cartData?.items || []);
+        });
+
+        // Listen for changes in the "Saved" collection
+        const unsubscribeSaved = onSnapshot(savedRef, (snapshot) => {
+          const savedData = snapshot.data();
+          setSavedItems(savedData?.items || []);
+        });
+
+        // Clean up the listeners when the component unmounts
+        return () => {
+          unsubscribeCart();
+          unsubscribeSaved();
+        };
+      }
     });
+
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    const fetchCartItems = async () => {
-      if (currentUser) {
-        const db = getFirestore();
-        const cartRef = doc(db, 'Cart', currentUser.uid);
-        const cartDoc = await getDoc(cartRef);
-        if (cartDoc.exists()) {
-          const cartData = cartDoc.data();
-          setCartItems(cartData.items || []);
-        }
-      }
-    };
-    fetchCartItems();
-  }, [currentUser]);
-
-  useEffect(() => {
-    const fetchCartItems = async () => {
-      if (currentUser) {
-        const db = getFirestore();
-        const cartRef = doc(db, 'Saved', currentUser.uid);
-        const cartDoc = await getDoc(cartRef);
-        if (cartDoc.exists()) {
-          const cartData = cartDoc.data();
-          setSavedItems(cartData.items || []);
-        }
-      }
-    };
-    fetchCartItems();
-  }, [currentUser]);
   const handleAddToCart = async (newItem: CartItem) => {
     if (currentUser) {
       const db = getFirestore();
@@ -63,162 +59,156 @@ const CartPage = () => {
       const savedRef = doc(db, 'Saved', currentUser.uid);
       const cartDoc = await getDoc(cartRef);
       const savedDoc = await getDoc(savedRef);
-  
+
       let updatedCartItems: CartItem[] = [];
       let updatedSavedItems: CartItem[] = [];
-  
+
       if (cartDoc.exists()) {
         const cartData = cartDoc.data();
         updatedCartItems = cartData.items || [];
       }
-  
+
       if (savedDoc.exists()) {
         const savedData = savedDoc.data();
         updatedSavedItems = savedData.items || [];
       }
-  
+
       // Remove the item from the "Saved for later" list
       const index = updatedSavedItems.findIndex((item) => item.id === newItem.id);
       if (index !== -1) {
         updatedSavedItems.splice(index, 1);
       }
-  
-      // Add the item to the cart
-      updatedCartItems.push({ ...newItem, quantity: 1 });
-  
+
+      // Add the item to the cart or update its quantity if it already exists
+      const existingItemIndex = updatedCartItems.findIndex((item) => item.id === newItem.id);
+      if (existingItemIndex !== -1) {
+        updatedCartItems[existingItemIndex].quantity += 1;
+      } else {
+        updatedCartItems.push({ ...newItem, quantity: 1 });
+      }
+
       await setDoc(cartRef, { items: updatedCartItems });
       await setDoc(savedRef, { items: updatedSavedItems });
       setCartItems(updatedCartItems);
       setSavedItems(updatedSavedItems);
     }
   };
-  const handleSaveForLater = async (itemId: string) => {
+
+  const deleteFromCart = async (itemId: string) => {
     if (currentUser) {
       const db = getFirestore();
       const cartRef = doc(db, 'Cart', currentUser.uid);
       const cartDoc = await getDoc(cartRef);
+
       if (cartDoc.exists()) {
         const cartData = cartDoc.data();
-        const updatedItems = cartData.items.map((item: { id: string; }) => {
-          if (item.id === itemId) {
-            return { ...item, savedForLater: true };
-          }
-          return item;
-        });
-        const newCartItems = updatedItems.filter((item: { savedForLater: any; }) => !item.savedForLater);
-        await updateDoc(cartRef, { items: newCartItems });
-        setCartItems(newCartItems);
-  
-        const savedRef = doc(db, 'Saved', currentUser.uid);
-        const savedDoc = await getDoc(savedRef);
-        if (!savedDoc.exists()) {
-          await setDoc(savedRef, { items: [] }); // Create the "Saved" collection if it doesn't exist
-        }
-        const savedData = (await getDoc(savedRef)).data();
-        if (savedData) {
-          const updatedSavedItems = [
-            ...savedData.items,
-            cartData.items.find((item: { id: string; }) => item.id === itemId),
-          ];
+        const updatedCartItems = cartData.items.filter((item: CartItem) => item.id !== itemId);
+
+        await updateDoc(cartRef, { items: updatedCartItems });
+        setCartItems(updatedCartItems);
+      }
+    }
+  };
+
+  const handleSaveForLater = async (itemId: string) => {
+    if (currentUser) {
+      const db = getFirestore();
+      const cartRef = doc(db, 'Cart', currentUser.uid);
+      const savedRef = doc(db, 'Saved', currentUser.uid);
+      const cartDoc = await getDoc(cartRef);
+      const savedDoc = await getDoc(savedRef);
+
+      if (cartDoc.exists() && savedDoc.exists()) {
+        const cartData = cartDoc.data();
+        const savedData = savedDoc.data();
+        const itemToSave = cartData.items.find((item: CartItem) => item.id === itemId);
+
+        if (itemToSave) {
+          const updatedCartItems = cartData.items.filter((item: CartItem) => item.id !== itemId);
+          const updatedSavedItems = [...savedData.items, itemToSave];
+
+          await updateDoc(cartRef, { items: updatedCartItems });
           await updateDoc(savedRef, { items: updatedSavedItems });
+          setCartItems(updatedCartItems);
           setSavedItems(updatedSavedItems);
         }
       }
     }
   };
-  const handleDelete = async (itemId: string) => {
+
+  const deleteFromSaved = async (itemId: string) => {
     if (currentUser) {
       const db = getFirestore();
-      const cartRef = doc(db, 'Cart', currentUser.uid);
-      const cartDoc = await getDoc(cartRef);
-      if (cartDoc.exists()) {
-        const cartData = cartDoc.data();
-        const updatedItems = cartData.items.filter((item: { id: string; }) => item.id !== itemId);
-        await updateDoc(cartRef, { items: updatedItems });
-        setCartItems(updatedItems);
+      const savedRef = doc(db, 'Saved', currentUser.uid);
+      const savedDoc = await getDoc(savedRef);
+
+      if (savedDoc.exists()) {
+        const savedData = savedDoc.data();
+        const updatedSavedItems = savedData.items.filter((item: CartItem) => item.id !== itemId);
+
+        await updateDoc(savedRef, { items: updatedSavedItems });
+        setSavedItems(updatedSavedItems);
       }
     }
   };
 
-  const Delete = async (itemId: string) => {
-    try {
-    if (currentUser) {
-    const db = getFirestore();
-    const cartRef = doc(db, 'Saved', currentUser.uid);
-    await deleteDoc(cartRef);
-    setCartItems([]);
-    }
-    } catch (error) {
-    console.error('Error deleting cart item:', error);
-    }
-    };
   return (
-    <>
-       <div className="cart-page">
-  <h1 style={{
-    fontWeight: '400',
-    fontSize: '28px',
-    lineHeight: '36px'
-  }}>Shopping Cart</h1>
-  {cartItems.length === 0 ? (
+    <div className="cart-page">
+      <h1 style={{ fontWeight: '400', fontSize: '28px', lineHeight: '36px' }}>Shopping Cart</h1>
+      {cartItems.length === 0 ? (
         <p className="empty-cart">Your cart is empty.</p>
       ) : (
-    <ul className="cart-items">
-      {cartItems.map((item) => (
-        <li key={item.id}>
-          <div className="cart-item">
-            <img
-              src={item.coverimage}
-              alt={item.title}
-      width={170}
-              className="cart-image"
-            />
-            <div className="cart-item-details">
-              <h3 className="cart-item-title">{item.title.slice(0, 100)}...</h3>
-              <p className="cart-item-price">Price: {item.price}</p>
-              <p className="cart-item-quantity">Quantity: 1</p>
+        <ul className="cart-items">
+          {cartItems.map((item) => (
+            <span key={item.id}>
+
+              <div className="cart-item">
+              <Link href={`/pages/Details/${item.id}`} className="hero-btn">
+
+                <img src={item.coverimage} alt={item.title} className="cart-image" />
+                </Link>
+                <div className="cart-item-details">
+                  <h3 className="cart-item-title">{item.title.slice(0, 100)}...</h3>
+                  <p className="cart-item-price">Price: {item.price}</p>
+                  <p className="cart-item-quantity">Quantity: {item.quantity}</p>
+                </div>
+              </div>
+              <div className="cart-item-actions">
+                <button className="cart-item-remove" onClick={() => deleteFromCart(item.id)}>
+                  Delete
+                </button>
+                <button className="cart-item-save" onClick={() => handleSaveForLater(item.id)}>
+                  Save for Later
+                </button>
+              </div>
+            </span>
+          ))}
+        </ul>
+      )}
+      <h2 style={{ fontWeight: '400', fontSize: '28px', lineHeight: '36px' }}>Saved for later</h2>
+      <ul className="saved-list">
+        {savedItems.map((item) => (
+          <li key={item.id}>
+            <div className="saved-item">
+              <img src={item.coverimage} alt={item.title} className="saved-image" />
+              <div className="saved-item-details">
+                <h3 className="saved-item-title">{item.title}</h3>
+                <p className="saved-item-price">Price: {item.price}</p>
+              </div>
             </div>
-          </div>
-          <div className="cart-item-actions">           
-          <button className="cart-item-remove" onClick={() => Delete(item.id)}>Delete</button>
-
-
-            <button className="cart-item-remove" onClick={() => handleSaveForLater(item.id)}>Save for Later</button>
-          </div>
-        </li>
-      ))}
-    </ul>
-  )}
-  <h2 style={{
-    fontWeight: '400',
-    fontSize: '28px',
-    lineHeight: '36px'
-  }}>Saved for later</h2>
-  <ul className="saved-list">
-    {savedItems.map((item) => (
-      <li key={item.id}>
-        <div className="saved-item">
-          <img
-            src={item.coverimage}
-            alt={item.title}
-         
-            className="saved-image"
-          />
-          <div className="saved-item-details">
-            <h3 className="saved-item-title">{item.title}</h3>
-            <p className="saved-item-price">Price: {item.price}</p>
-          </div>
-        </div>
-        <div className="saved-item-actions">
-          <button className="saved-item-delete" onClick={() => Delete(item.id)}>Delete</button>
-          <button className="saved-item-add-to-cart" onClick={() => handleAddToCart(item)}>Add to cart</button>
-        </div>
-      </li>
-    ))}
-  </ul>
-</div>
-    </>
-  ); 
-}
+            <div className="saved-item-actions">
+              <button className="saved-item-delete" onClick={() => deleteFromSaved(item.id)}>
+                Delete
+              </button>
+              <button className="saved-item-add-to-cart" onClick={() => handleAddToCart(item)}>
+                Add to cart
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+};
 
 export default CartPage;

@@ -408,8 +408,9 @@ border: none;
   padding: 0;
 }
 
-.cart-items li{
-  list-style: none;
+.cart-item img{
+  width: 150px;
+  padding: 0 10px 0 0;
 }
 
 
@@ -448,6 +449,14 @@ border: none;
   cursor: pointer;
 }
 
+.cart-item-save{
+  background-color: #fff;
+  border: 1px solid #ddd;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
 
 
 .saved-list {
@@ -463,8 +472,8 @@ border: none;
 }
 
 .saved-item img {
-  height: 175px;
-}
+  width: 150px;
+  padding: 0 10px 0 0;}
 
 
 .saved-item-title {
