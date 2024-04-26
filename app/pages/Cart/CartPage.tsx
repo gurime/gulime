@@ -52,7 +52,7 @@ const CartPage = () => {
     return unsubscribe;
   }, []);
 
-  const handleAddToCart = async (newItem: CartItem) => {
+  const handleAddToCart = async (newItem: CartItem, quantity: number) => {
     if (currentUser) {
       const db = getFirestore();
       const cartRef = doc(db, 'Cart', currentUser.uid);
@@ -64,18 +64,16 @@ const CartPage = () => {
         updatedCartItems = cartData.items || [];
       }
   
-      // Check if the item already exists in the cart
       const existingItemIndex = updatedCartItems.findIndex((item) => item.id === newItem.id);
       if (existingItemIndex !== -1) {
-        updatedCartItems[existingItemIndex].quantity += 1;
+        updatedCartItems[existingItemIndex].quantity += quantity;
       } else {
-        updatedCartItems.push({ ...newItem, quantity: 1 });      }
+        updatedCartItems.push({ ...newItem, quantity });
+      }
   
-      // Update the cart with the updated items
       await setDoc(cartRef, { items: updatedCartItems });
       setCartItems(updatedCartItems);
   
-      // If the item was moved from "Saved for Later", remove it from there
       deleteFromSaved(newItem.id);
     }
   };
@@ -137,47 +135,87 @@ const CartPage = () => {
     }
   };
 
+  const handleQuantityChange = async (item: CartItem, change: number) => {
+    if (currentUser) {
+      const db = getFirestore();
+      const cartRef = doc(db, 'Cart', currentUser.uid);
+      const cartDoc = await getDoc(cartRef);
+  
+      if (cartDoc.exists()) {
+        const cartData = cartDoc.data();
+        const updatedCartItems = cartData.items.map((cartItem: CartItem) => {
+          if (cartItem.id === item.id) {
+            return { ...cartItem, quantity: cartItem.quantity + change };
+          }
+          return cartItem;
+        });
+  
+        await updateDoc(cartRef, { items: updatedCartItems });
+        setCartItems(updatedCartItems);
+      }
+    }
+  };
+
   return (
-    <div className="cart-page">
-      <h1 style={{ fontWeight: '400', fontSize: '28px', lineHeight: '36px' }}>Shopping Cart</h1>
-      {cartItems.length === 0 ? (
-        <p className="empty-cart">Your cart is empty.</p>
-      ) : (
-        <ul className="cart-items">
-          {cartItems.map((item) => (
-            <span key={item.id}>
+<div className="cart-page">
+  <h1 style={{ fontWeight: '400', fontSize: '28px', lineHeight: '36px' }}>Shopping Cart</h1>
+  {cartItems.length === 0 ? (
+    <p className="empty-cart">Your cart is empty.</p>
+  ) : (
+    <ul className="cart-items">
+      {cartItems.map((item) => (
+        <span key={item.id}>
+          <div className="cart-item">
+            <Link href={`/pages/Details/${item.id}`} className="hero-btn">
+              <img src={item.coverimage} alt={item.title} className="cart-image" />
+            </Link>
+            <div className="cart-item-details">
+              <h3 className="cart-item-title">{item.title.slice(0, 100)}...</h3>
+              <p className="cart-item-price">Price: {item.price}</p>
+              <p className="cart-item-quantity">Quantity: {item.quantity}</p>
+            </div>
+          </div>
+          <div className="cart-item-actions">
+            <button className="cart-item-remove" onClick={() => deleteFromCart(item.id)}>
+              Delete
+            </button>
+            <button className="cart-item-save" onClick={() => handleSaveForLater(item.id)}>
+              Save for Later
+            </button>
+            <div className="quantity-controls">
+          <button
+            className="quantity-btn decrement"
+            onClick={() => handleQuantityChange(item, -1)}
+            disabled={item.quantity === 1}
+          >
+            -
+          </button>
+          <span className="quantity">{item.quantity}</span>
+          <button
+            className="quantity-btn increment"
+            onClick={() => handleQuantityChange(item, 1)}
+          >
+            +
+          </button>
+        </div>
+          </div>
+        </span>
+      ))}
+    </ul>
+  )}
+  {cartItems.length > 0 && (
+  <Link href="/pages/Checkout">
+    <button className="checkout-button">Proceed to Checkout</button>
+  </Link>
+)}
 
-              <div className="cart-item">
-              <Link href={`/pages/Details/${item.id}`} className="hero-btn">
-
-                <img src={item.coverimage} alt={item.title} className="cart-image" />
-                </Link>
-                <div className="cart-item-details">
-                  <h3 className="cart-item-title">{item.title.slice(0, 100)}...</h3>
-                  <p className="cart-item-price">Price: {item.price}</p>
-                  <p className="cart-item-quantity">Quantity: {item.quantity}</p>
-                </div>
-              </div>
-              <div className="cart-item-actions">
-                <button className="cart-item-remove" onClick={() => deleteFromCart(item.id)}>
-                  Delete
-                </button>
-                <button className="cart-item-save" onClick={() => handleSaveForLater(item.id)}>
-                  Save for Later
-                </button>
-              </div>
-            </span>
-          ))}
-        </ul>
-      )}
       <h2 style={{ fontWeight: '400', fontSize: '28px', lineHeight: '36px' }}>Saved for later</h2>
       <ul className="saved-list">
         {savedItems.map((item) => (
-          <li key={item.id}>
+          <span key={item.id}>
             <div className="saved-item">
-            <Link href={`/pages/Details/${item.id}`} className="hero-btn">
-
-              <img src={item.coverimage} alt={item.title} className="saved-image" />
+              <Link href={`/pages/Details/${item.id}`} className="hero-btn">
+                <img src={item.coverimage} alt={item.title} className="saved-image" />
               </Link>
               <div className="saved-item-details">
                 <h3 className="saved-item-title">{item.title}</h3>
@@ -188,14 +226,16 @@ const CartPage = () => {
               <button className="saved-item-delete" onClick={() => deleteFromSaved(item.id)}>
                 Delete
               </button>
-              <button className="saved-item-add-to-cart" onClick={() => handleAddToCart(item)}>
+              <button className="saved-item-add-to-cart" onClick={() => handleAddToCart(item,1)}>
                 Add to cart
               </button>
             </div>
-          </li>
+          </span>
         ))}
       </ul>
-    </div>
+
+  
+</div>
   );
 };
 
