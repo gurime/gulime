@@ -10,6 +10,7 @@ import { collectionRoutes, getArticle } from './HeroFormApi/api';
 import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 import { getAuth } from 'firebase/auth';
+import { CartProvider, useCart } from '../Context/Cartcontext';
 
 type SearchResult = {
     title: string;
@@ -28,7 +29,9 @@ export default function Navbar() {
     const [isOverlayActive, setIsOverlayActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [names, setNames] = useState<string[]>([]);
-    const [cartCount, setCartCount] = useState<number>(0);
+    const { cartCount, setCartCount } = useCart();
+
+
         const [loading, setLoading] = useState<boolean>(true);
     const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
     
@@ -165,6 +168,7 @@ export default function Navbar() {
   
 return (
 <>
+
 <div className="nav">
 <Image placeholder="blur" onClick={() => router.push('/')} src={navlogo} height={36} alt='...' />
 

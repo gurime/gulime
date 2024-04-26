@@ -56,43 +56,31 @@ const CartPage = () => {
     if (currentUser) {
       const db = getFirestore();
       const cartRef = doc(db, 'Cart', currentUser.uid);
-      const savedRef = doc(db, 'Saved', currentUser.uid);
       const cartDoc = await getDoc(cartRef);
-      const savedDoc = await getDoc(savedRef);
-
+  
       let updatedCartItems: CartItem[] = [];
-      let updatedSavedItems: CartItem[] = [];
-
       if (cartDoc.exists()) {
         const cartData = cartDoc.data();
         updatedCartItems = cartData.items || [];
       }
-
-      if (savedDoc.exists()) {
-        const savedData = savedDoc.data();
-        updatedSavedItems = savedData.items || [];
-      }
-
-      // Remove the item from the "Saved for later" list
-      const index = updatedSavedItems.findIndex((item) => item.id === newItem.id);
-      if (index !== -1) {
-        updatedSavedItems.splice(index, 1);
-      }
-
-      // Add the item to the cart or update its quantity if it already exists
+  
+      // Check if the item already exists in the cart
       const existingItemIndex = updatedCartItems.findIndex((item) => item.id === newItem.id);
       if (existingItemIndex !== -1) {
         updatedCartItems[existingItemIndex].quantity += 1;
       } else {
-        updatedCartItems.push({ ...newItem, quantity: 1 });
+        updatedCartItems.push({ ...newItem, quantity: newItem.quantity + 1 });
       }
-
+  
+      // Update the cart with the updated items
       await setDoc(cartRef, { items: updatedCartItems });
-      await setDoc(savedRef, { items: updatedSavedItems });
       setCartItems(updatedCartItems);
-      setSavedItems(updatedSavedItems);
+  
+      // If the item was moved from "Saved for Later", remove it from there
+      deleteFromSaved(newItem.id);
     }
   };
+  
 
   const deleteFromCart = async (itemId: string) => {
     if (currentUser) {
@@ -117,25 +105,23 @@ const CartPage = () => {
       const savedRef = doc(db, 'Saved', currentUser.uid);
       const cartDoc = await getDoc(cartRef);
       const savedDoc = await getDoc(savedRef);
-
-      if (cartDoc.exists() && savedDoc.exists()) {
+  
+      if (cartDoc.exists()) {
         const cartData = cartDoc.data();
-        const savedData = savedDoc.data();
         const itemToSave = cartData.items.find((item: CartItem) => item.id === itemId);
-
+  
         if (itemToSave) {
           const updatedCartItems = cartData.items.filter((item: CartItem) => item.id !== itemId);
-          const updatedSavedItems = [...savedData.items, itemToSave];
-
+          const updatedSavedItems = savedDoc.exists() ? [...savedDoc.data().items, itemToSave] : [itemToSave];
+  
           await updateDoc(cartRef, { items: updatedCartItems });
-          await updateDoc(savedRef, { items: updatedSavedItems });
+          await setDoc(savedRef, { items: updatedSavedItems });
           setCartItems(updatedCartItems);
           setSavedItems(updatedSavedItems);
         }
       }
     }
   };
-
   const deleteFromSaved = async (itemId: string) => {
     if (currentUser) {
       const db = getFirestore();
