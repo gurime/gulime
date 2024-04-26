@@ -519,15 +519,16 @@ border: none;
 }
 
 .browsing-history {
-  max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  border-top:solid 1px grey ;
 }
 
 .browsing-history h2 {
   font-size: 24px;
-  font-weight: bold;
+  font-weight: 400;
   margin-bottom: 20px;
+  color: #333333;
 }
 
 .browsing-history-items {
@@ -544,7 +545,7 @@ border: none;
 }
 
 .browsing-history-item img {
-  max-width: 100px;
+  max-width: 120px;
   height: auto;
   margin-bottom: 10px;
 }

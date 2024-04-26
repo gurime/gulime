@@ -194,7 +194,6 @@ export default function Dashboard() {
           await setDoc(cartRef, {
             items: [
               {
-                userId: currentUser.uid,
                 id: article.id,
                 title: article.title,
                 price: article.price,
@@ -205,17 +204,6 @@ export default function Dashboard() {
           });
           router.push('/pages/Cart');
         }
-  
-        // Save the browsed item to the user's browsing history
-        const browsingHistoryRef = collection(db, 'BrowsingHistory');
-        await addDoc(browsingHistoryRef, {
-          userId: currentUser.uid,
-          id: article.id,
-          title: article.title,
-          price: article.price,
-          coverimage: article.coverimage,
-          timestamp: serverTimestamp(),
-        });
       } else {
         // Handle the case where the user is not logged in
       }

@@ -4,7 +4,6 @@ import { Metadata } from 'next'
 import React from 'react'
 import CartPage from './CartPage'
 import Footer from '@/app/components/footer'
-import CartHistory from './CartHistory'
 
 
 export const metadata: Metadata = {
@@ -18,7 +17,6 @@ return (
 <AdminHeader/>
 <Navbar/>
 <CartPage/>
-<CartHistory/>
 <Footer/>
 </>
 )
