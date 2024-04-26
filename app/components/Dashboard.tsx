@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { User, getAuth, onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, getDoc, getDocs, getFirestore, orderBy, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, orderBy, query, serverTimestamp, setDoc, updateDoc, where } from 'firebase/firestore';
 import { auth, db } from '@/app/firebase/firebase';
 import { useRouter } from 'next/navigation';
 import Skeleton from 'react-loading-skeleton';
@@ -153,7 +153,6 @@ export default function Dashboard() {
     };
   }, []); 
 
-
   const handleAddToCart = async (article: Article) => {
     try {
       const auth = getAuth();
@@ -179,6 +178,7 @@ export default function Dashboard() {
           } else {
             // If the item doesn't exist, add it to the items array
             items.push({
+              userId: currentUser.uid,
               id: article.id,
               title: article.title,
               price: article.price,
@@ -194,6 +194,7 @@ export default function Dashboard() {
           await setDoc(cartRef, {
             items: [
               {
+                userId: currentUser.uid,
                 id: article.id,
                 title: article.title,
                 price: article.price,
@@ -204,6 +205,17 @@ export default function Dashboard() {
           });
           router.push('/pages/Cart');
         }
+  
+        // Save the browsed item to the user's browsing history
+        const browsingHistoryRef = collection(db, 'BrowsingHistory');
+        await addDoc(browsingHistoryRef, {
+          userId: currentUser.uid,
+          id: article.id,
+          title: article.title,
+          price: article.price,
+          coverimage: article.coverimage,
+          timestamp: serverTimestamp(),
+        });
       } else {
         // Handle the case where the user is not logged in
       }

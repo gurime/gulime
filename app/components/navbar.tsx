@@ -3,14 +3,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react'
-import navlogo from '../img/gulime.png'
+import navlogo from  '../img/gulime.png'
 import Footer from './footer';
 import { FaShoppingCart } from 'react-icons/fa';
 import { collectionRoutes, getArticle } from './HeroFormApi/api';
 import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot } from 'firebase/firestore';
 import { auth, db } from '../firebase/firebase';
 import { getAuth } from 'firebase/auth';
-import { CartProvider, useCart } from '../Context/Cartcontext';
 
 type SearchResult = {
     title: string;
@@ -29,7 +28,7 @@ export default function Navbar() {
     const [isOverlayActive, setIsOverlayActive] = useState(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [names, setNames] = useState<string[]>([]);
-    const { cartCount, setCartCount } = useCart();
+    const [cartCount, setCartCount] = useState<number>(0);
 
 
         const [loading, setLoading] = useState<boolean>(true);
@@ -137,38 +136,43 @@ export default function Navbar() {
     setIsFooterVisible(!isFooterVisible);
     };
     useEffect(() => {
-      const fetchCartData = () => {
+      const fetchCartData = async () => {
         const auth = getAuth();
         const currentUser = auth.currentUser;
-        
         if (currentUser) {
           const db = getFirestore();
           const cartRef = doc(db, "Cart", currentUser.uid);
-          
+          const snapshot = await getDoc(cartRef);
+          const cartData = snapshot.data();
+          let totalItems = 0;
+          if (cartData && cartData.items) {
+            totalItems = cartData.items.reduce(
+              (sum: number, item: { quantity: number }) => sum + item.quantity,
+              0
+            );
+          }
+          setCartCount(totalItems);
+    
           const unsubscribe = onSnapshot(cartRef, (snapshot) => {
-            const cartData = snapshot.data();
-            let totalItems = 0;
-            
-            if (cartData && cartData.items) {
-              totalItems = cartData.items.reduce((sum: number, item: { quantity: number }) => sum + item.quantity, 0);
+            const updatedCartData = snapshot.data();
+            let updatedTotalItems = 0;
+            if (updatedCartData && updatedCartData.items) {
+              updatedTotalItems = updatedCartData.items.reduce(
+                (sum: number, item: { quantity: number }) => sum + item.quantity,
+                0
+              );
             }
-            
-            setCartCount(totalItems);
+            setCartCount(updatedTotalItems);
           });
-          
-          // Clean up the listener when the component unmounts
+    
           return unsubscribe;
         }
       };
     
-      const unsubscribe = fetchCartData();
-      return unsubscribe;
+      fetchCartData();
     }, []);
-    
-  
 return (
 <>
-
 <div className="nav">
 <Image placeholder="blur" onClick={() => router.push('/')} src={navlogo} height={36} alt='...' />
 

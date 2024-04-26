@@ -69,8 +69,7 @@ const CartPage = () => {
       if (existingItemIndex !== -1) {
         updatedCartItems[existingItemIndex].quantity += 1;
       } else {
-        updatedCartItems.push({ ...newItem, quantity: newItem.quantity + 1 });
-      }
+        updatedCartItems.push({ ...newItem, quantity: 1 });      }
   
       // Update the cart with the updated items
       await setDoc(cartRef, { items: updatedCartItems });
@@ -176,7 +175,10 @@ const CartPage = () => {
         {savedItems.map((item) => (
           <li key={item.id}>
             <div className="saved-item">
+            <Link href={`/pages/Details/${item.id}`} className="hero-btn">
+
               <img src={item.coverimage} alt={item.title} className="saved-image" />
+              </Link>
               <div className="saved-item-details">
                 <h3 className="saved-item-title">{item.title}</h3>
                 <p className="saved-item-price">Price: {item.price}</p>

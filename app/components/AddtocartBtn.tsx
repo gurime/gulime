@@ -49,6 +49,7 @@ export default function AddToCartBtn({ articleId, post }: { articleId: string; p
             await setDoc(cartRef, {
               items: [
                 {
+                  userId: currentUser.uid,
                   id: articleId,
                   title: article.title,
                   price: article.price,

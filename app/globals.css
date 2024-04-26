@@ -518,6 +518,47 @@ border: none;
   padding: 40px;
 }
 
+.browsing-history {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.browsing-history h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.browsing-history-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-gap: 20px;
+}
+
+.browsing-history-item {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  text-align: center;
+}
+
+.browsing-history-item img {
+  max-width: 100px;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.browsing-history-item h3 {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.browsing-history-item p {
+  font-size: 14px;
+  color: #888;
+}
+
 /* cart page stops here */
 
 .product-details {

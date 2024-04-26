@@ -99,7 +99,6 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
             </div>
           </div>
           <div className="body-content">
-            <p>{postWithTimestamp.content}</p>
           </div>
         </div>
         <Footer />
