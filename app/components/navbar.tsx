@@ -215,22 +215,30 @@ return (
 
 
 {isSignedIn ? (
-<Link  href='#!'>
-{names.length === 2 && (
-<>
-<span className="sm-name" >{names[0]}</span>
-<span className="sm-name">{names[1]}</span>
-</>
-)}
-</Link>
+  <Link href='#!' style={{ cursor: 'default' }}>
+    {names.length === 2 && (
+      <>
+        <span className="sm-name">{names[0]}</span>
+        <span className="sm-name">{names[1]}</span>
+      </>
+    )}
+  </Link>
 ) : (
-
-<span className="sm-name">
-Guest
-
-</span>
+  <div className="commentreg-box">
+    <span
+      style={{ margin: '10px', color: '#fff', cursor: 'pointer' }}
+      onClick={() => router.push('/pages/Login')}
+    >
+      Login
+    </span>
+    <span
+      style={{ margin: '10px', color: '#fff', cursor: 'pointer' }}
+      onClick={() => router.push('/pages/Register')}
+    >
+      Register
+    </span>
+  </div>
 )}
-
 <Link href="/">Home</Link>
 <Link href="/pages/Technology">Technology</Link>
 <Link href="/pages/Music">Music</Link>

@@ -117,7 +117,7 @@ return (
 
 
 <div className="navlinks sm-navlink" style={{flexWrap:'nowrap'}}>
-<Link  href='/pages/Contact'>Contact Gulime</Link>
+<Link  href='/pages/Contact'>Contact Gulime.com</Link>
 
 <Link  href='/pages/Terms'>terms of Use</Link>
 
