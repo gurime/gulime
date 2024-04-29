@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import contactimg from '../../img/gulime.png'
-import { BeatLoader } from 'react-spinners';
+import { DotLoader } from 'react-spinners';
 
 export default function ContactForm() {
     const [names, setNames] = useState('');
@@ -103,13 +103,13 @@ export default function ContactForm() {
 return (
 <>
 <div className='contact_title_img'>
-        <Link href='/'>
-          <Image title='Home Page' height={34} src={contactimg} alt='...' />
-        </Link>
+<Link href='/'>
+<h2>Contact Gulime</h2>
+</Link>
       </div>
       <div style={{ display: 'grid', placeContent: 'center', maxWidth: '30rem', margin: 'auto' }}>
         <form className='formbox' onSubmit={handleSubmit}>
-          <label htmlFor='fname' aria-label="Name">Name</label>
+          <label htmlFor='fname' aria-label="Name">Full Name</label>
           <input type="text" name="fname" value={names} onChange={(e) => setNames(e.target.value)} required />
           <label htmlFor='email' aria-label="Email">Email</label>
           <input type="email" name="email" aria-describedby="emailError" value={email} onChange={(e) => { setEmail(e.target.value); }} />
@@ -117,21 +117,21 @@ return (
           <input type="text" name="subject" aria-describedby="subjectError" value={subject} onChange={(e) => setSubject(e.target.value)} />
 
           <label htmlFor='content' aria-label="Type Your Message">Type Your Message</label>
-          <textarea
-            name="content"
-            rows={5}
-            required
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            autoFocus={autoFocus}
-            aria-describedby="messageError"
-          />
-          <button className={isSignedIn ? "submitbtn" : "submitbtn disabled"} type="submit" disabled={!isSignedIn || !content || isLoading}>
-            {isLoading ? <BeatLoader color='blue' /> : 'Submit'}
-          </button>
-        </form>
-        {errorMessage && <p className='error'>{errorMessage}</p>}
-        {successMessage && <p className="success">{successMessage}</p>}
-      </div></>
+<textarea
+name="content"
+rows={5}
+required
+value={content}
+onChange={(e) => setContent(e.target.value)}
+autoFocus={autoFocus}
+aria-describedby="messageError"
+/>
+<button className={isSignedIn ? "submitbtn" : "submitbtn disabled"} type="submit" disabled={!isSignedIn || !content || isLoading}>
+{isLoading ? <DotLoader color='blue' /> : 'Submit'}
+</button>
+</form>
+{errorMessage && <p className='error'>{errorMessage}</p>}
+{successMessage && <p className="success">{successMessage}</p>}
+</div></>
 )
 }

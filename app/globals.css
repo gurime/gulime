@@ -772,6 +772,67 @@ padding: 0 1rem;
   padding: 40px;
 }
 
+.contact_title_img{
+  display: flex;
+  place-content: center;
+  place-items: center;
+  flex-direction: column;
+  padding: 1rem 0;
+  background-color: #1508ce;
+}
+
+.contact_title_img a{
+  text-decoration: none;
+  color: #fff;
+}
+
+.contact_title_img h2{
+    font-weight: 400;
+
+}
+
+.formbox{
+ 
+    letter-spacing: 1px;
+    margin: 1rem auto;
+
+}
+
+.formbox label {
+  line-height: 2;
+}
+
+.formbox input {
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #000dff;
+  text-indent: 7px;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+  outline: none;
+  font-size: 20px;
+}
+
+.formbox textarea {
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #000dff;
+  text-indent: 7px;
+  margin-bottom: 1rem;
+  resize: none;
+  font-size: 18px;
+}
+
+.formbox button {
+  background-color: #000dff;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  outline: none;
+  padding: 20px;
+  width: 100%;
+}
 
 
 
