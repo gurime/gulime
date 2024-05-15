@@ -66,7 +66,7 @@ export async function generateMetadata({ params }: { params: { id: string } }): 
               <h1 className="product-title">{postWithTimestamp.title}</h1>
               <ProductRatings productId={articleId} />
               <p className="product-price">{postWithTimestamp.price}</p>
-              <div className="product-details">
+              <div className="product-details-info">
                 <p>
                   <strong>About this item:</strong>
                 </p>

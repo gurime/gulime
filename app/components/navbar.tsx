@@ -171,6 +171,14 @@ export default function Navbar() {
     
       fetchCartData();
     }, []);
+
+    const handleLogout = async () => {
+      try {
+      await auth.signOut();
+      router.push('/pages/Login')
+      } catch (error) {
+      }
+      };
 return (
 <>
 <div className="nav">
@@ -218,8 +226,17 @@ return (
   <Link href='#!' style={{ cursor: 'default' }}>
     {names.length === 2 && (
       <>
-        <span className="sm-name">{names[0]}</span>
-        <span className="sm-name">{names[1]}</span>
+        <span className="sm-name">{`${names[0]} ${names[1]}`}</span>
+
+
+        <span className="sm-name"
+style={{
+  cursor:'pointer'
+}}
+onClick={handleLogout}
+>
+Log out
+</span>  
       </>
     )}
   </Link>

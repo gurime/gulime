@@ -625,10 +625,11 @@ border: none;
 /* cart page stops here */
 
 .product-details {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 2rem;
-  margin-bottom: 1rem;
+  align-items: baseline;
+  width: 100%;
 }
 
 
@@ -662,34 +663,52 @@ border: none;
 
 
 .product-images {
-  flex: 0 0 50%;
-  display: flex;
-  flex-direction: column;
+  display: flex; 
+
 }
 
 .main-image {
-  margin-bottom: 1rem;
+  flex: 2; 
+  margin-left: 1rem;
 }
 
 .main-image img {
   width: 100%;
+
 }
 
 .thumbnails {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
+ 
+  flex: 1; 
 }
 
 .thumbnails img {
-  width: 100%;
+  width: 150px;
   cursor: pointer;
   border: 1px solid #ddd;
 }
 
-.product-info {
-  flex: 1;
+@media (max-width: 768px) {
+  .product-images {
+    flex-direction: column-reverse;  }
+
+  .main-image {
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+
+  .thumbnails {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .thumbnails img {
+    width: 100px;
+
+    flex: 1; /* Ensure thumbnails are evenly spaced */
+  }
 }
+
 
 .product-title {
   font-size: 1.5rem;
@@ -749,11 +768,11 @@ padding: 0 1rem;
 
 @media(max-width:768px){
   .product-details{
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .product-title{
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .product-price{
@@ -834,6 +853,49 @@ padding: 0 1rem;
   width: 100%;
 }
 
+  .contribute-box {
+    display: flex;
+    margin: 3rem auto;
+    justify-content: space-evenly;
+    padding: 0 1rem;
+    place-items: center;
+}
+
+.contribute-leftbox {
+  height: auto;
+  padding: 2rem 0;
+}
+
+.contribute-leftbox img {
+
+  width: auto;
+  display: flex;
+  height: 40px;
+  margin: auto;
+}
+
+.contribute-rightbox {
+  padding-left: 3rem;
+  text-transform: capitalize;
+}
+
+.contribute-rightbox h1 {
+  font-size: 3rem;
+  line-height: 1.3;
+  color:#000dff;
+}
+
+.weak {
+  color: red;
+}
+
+.moderate {
+  color: #c7780a;
+}
+
+.strong {
+  color: green;
+}
 
 
   footer{

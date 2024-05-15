@@ -10,20 +10,22 @@ function ImageGallery({ images }: ImageGalleryProps) {
 const [mainImage, setMainImage] = useState<string | undefined>(images[0]);
 return (
 <div className="product-images">
-<div className="main-image">
-<img className="cover_image" src={mainImage} alt="Main" />
+  
+  <div className="thumbnails">
+    {images.map((image: string | undefined, index: Key | null | undefined) => (
+      <img
+        key={index}
+        src={image}
+        alt={`Thumbnail ${index}`}
+        onClick={() => setMainImage(image)}
+      />
+    ))} 
+  </div>
+  <div className="main-image">
+    <img className="cover_image" src={mainImage} alt="Main" />
+  </div>
 </div>
-<div className="thumbnails">
-{images.map((image: string | undefined, index: Key | null | undefined) => (
-<img
-key={index}
-src={image}
-alt={`Thumbnail ${index}`}
-onClick={() => setMainImage(image)}
-/>
-))}
-</div>
-</div>
+
 );
 }
 
