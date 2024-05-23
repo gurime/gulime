@@ -182,97 +182,84 @@ export default function Navbar() {
 return (
 <>
 <div className="nav">
-<Image placeholder="blur" onClick={() => router.push('/')} src={navlogo} height={36} alt='...' />
-
-<div style={overlayStyle}>
-</div>
-<form style={{ width: '100%',position:'relative',  }} onSubmit={handleSearch}>
-<input
-  placeholder="Search Gulime"
-  type="search"
-  spellCheck="false"
-  dir="auto"
-  tabIndex={0}
-  value={searchTerm}
-  onChange={(e) => {
-    setSearchTerm(e.target.value);
-    handleSearch();
-    handleSearchInputChange(e);
-    setIsOverlayActive(e.target.value.trim().length > 0);
-  }}
-/>
-
-{searchResults.length > 0 && searchTerm && !loading && (
-  <div className="search-results-container">
-    {searchResults.slice(0, 5).map((result) => (
-      <div key={result.id} className="search-result-item">
-        <Link key={result.id} href={getLink(result.collection, result.id)}>
-          <p style={{fontWeight:'400'}}>Product: {result.title.length > 20 ? result.title.substring(0, 30)  : result.title}...</p>
-          <p style={{fontWeight:'400'}}>Price: {result.price}</p>
-        </Link>
+  <Image placeholder="blur" onClick={() => router.push('/')} src={navlogo} height={36} alt='...' />
+  
+  <div style={overlayStyle}></div>
+  
+  <form style={{ width: '100%', position: 'relative' }} onSubmit={handleSearch}>
+    <input
+      placeholder="Search Gulime"
+      type="search"
+      spellCheck="false"
+      dir="auto"
+      tabIndex={0}
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        handleSearch();
+        handleSearchInputChange(e);
+        setIsOverlayActive(e.target.value.trim().length > 0);
+      }}
+    />
+    {searchResults.length > 0 && searchTerm && !loading && (
+      <div className="search-results-container">
+        {searchResults.slice(0, 5).map((result) => (
+          <div key={result.id} className="search-result-item">
+            <Link key={result.id} href={getLink(result.collection, result.id)}>
+              <p style={{ fontWeight: '400' }}>Product: {result.title.length > 20 ? result.title.substring(0, 30) : result.title}...</p>
+              <p style={{ fontWeight: '400' }}>Price: {result.price}</p>
+            </Link>
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-)}
-
-
-
-</form>
-
-<div className="navlinks">
-
-
-{isSignedIn ? (
-  <Link href='#!' style={{ cursor: 'default' }}>
-    {names.length === 2 && (
-      <>
-        <span className="sm-name">{`${names[0]} ${names[1]}`}</span>
-
-
-        <span className="sm-name"
-style={{
-  cursor:'pointer'
-}}
-onClick={handleLogout}
->
-Log out
-</span>  
-      </>
     )}
-  </Link>
-) : (
-  <div className="commentreg-box">
-    <span
-      style={{ margin: '10px', color: '#fff', cursor: 'pointer' }}
-      onClick={() => router.push('/pages/Login')}
-    >
-      Login
-    </span>
-    <span
-      style={{ margin: '10px', color: '#fff', cursor: 'pointer' }}
-      onClick={() => router.push('/pages/Register')}
-    >
-      Register
-    </span>
+  </form>
+
+  <div className="navlinks">
+    {isSignedIn ? (
+      <Link href='#!' style={{ cursor: 'default' }}>
+        {names.length === 2 && (
+          <>
+            <span className='sm-name'>
+              {names.map((name, index) => (
+                <span key={index} className='name-item'>{name}</span>
+              ))}
+            </span>
+            <span className="sm-name" style={{ cursor: 'pointer' }} onClick={handleLogout}>
+              Log out
+            </span>
+          </>
+        )}
+      </Link>
+    ) : (
+      <div className="commentreg-box">
+        <span style={{ color: '#fff' }}>Guest</span>
+        <span style={{ color: '#fff', cursor: 'pointer' }} onClick={() => router.push('/pages/Login')}>
+          Login
+        </span>
+        <span style={{ color: '#fff', cursor: 'pointer' }} onClick={() => router.push('/pages/Register')}>
+          Register
+        </span>
+      </div>
+    )}
+    <Link href="/">Home</Link>
+    <Link href="/pages/Technology">Technology</Link>
+    <Link href="/pages/Music">Music</Link>
+    <Link href="/pages/Fashion">Fashion</Link>
+    <Link href="/pages/Sports">Sports</Link>
+    <Link href='#!' onClick={toggleFooter}>More:</Link>
+    <Link href='/pages/Cart' className="cart-link">
+      <div className="cart-icon-container">
+        <FaShoppingCart style={{ fontSize: '24px', color: '#fff', padding: '0 5px 0 0' }} />
+        <span className="cart-count">{cartCount !== undefined ? cartCount : ''}</span>
+      </div>
+    </Link>
   </div>
-)}
-<Link href="/">Home</Link>
-<Link href="/pages/Technology">Technology</Link>
-<Link href="/pages/Music">Music</Link>
-<Link href="/pages/Fashion">Fashion</Link>
-<Link href="/pages/Sports">Sports</Link>
-<Link href='#!' onClick={toggleFooter}>More:</Link>
-<Link href='/pages/Cart' className="cart-link">
-  <div className="cart-icon-container">
-    <FaShoppingCart style={{ fontSize: '24px', color: '#fff', padding: '0 5px 0 0' }} />
-    <span className="cart-count">{cartCount !== undefined ? cartCount : ''}</span>
-
-</div>
-</Link>
 </div>
 
 
-</div>
+
+
 <div style={{position:'relative',width:'100%'}}>
 <div style={{position:'absolute',width:'100%'}}>
 {isFooterVisible && <Footer />}</div>

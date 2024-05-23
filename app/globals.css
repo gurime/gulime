@@ -17,6 +17,10 @@ letter-spacing: 1px;
   .sm-navlinks12 a{
     display:inline-block !important;
   }
+
+  .name-item{
+    margin-right: 5px;
+  }
   
   .admin_login h1{
     color: #fff;
@@ -262,6 +266,8 @@ text-decoration:none;
 display: flex;
 place-items: center;
 }
+
+
 
 @media(max-width:1290px){
 .nav{
