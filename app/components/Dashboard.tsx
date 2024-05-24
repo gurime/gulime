@@ -239,7 +239,9 @@ return (
     </>
   ) : (
 useArticle
-.filter((post) => post.id === 'aNvAEn3uhvs9BDUhbikF' || post.id === '662oluIkcGSgIqdhYJQc' || post.id  === 'kVO4Bvo3xiG8Plw9rx2n')
+.filter((post) => post.id === 'aNvAEn3uhvs9BDUhbikF' || post.id === '662oluIkcGSgIqdhYJQc' || post.id  === 'kVO4Bvo3xiG8Plw9rx2n' || post.id === 'WxtosmSgZqvFVHAjBvEn'
+
+)
 .map((post) => (
 <React.Fragment key={post.id}>
 {post.id === 'aNvAEn3uhvs9BDUhbikF' && (
@@ -257,21 +259,25 @@ useArticle
 </div>
 )}
 
-{post.id === '662oluIkcGSgIqdhYJQc' && (
-<div className="first-left-content" key={`${post.id}-first-left-content`}>
-<h2>{post.catorgory}</h2>
-<div>
-<Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
-<img src={post.coverimage} alt="" />
-</Link>
+<div className="container"> {/* Wrap the entire content section */}
+  {['662oluIkcGSgIqdhYJQc', 'WxtosmSgZqvFVHAjBvEn'].includes(post.id) && (
+    <div className="first-left-content" key={`${post.id}-first-left-content`}>
+      <h2>{post.catorgory}</h2>
+      <div className="content-wrapper">
+        <Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
+          <img src={post.coverimage} alt="" />
+        </Link>
+        <span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
+        <div className='dashprice' style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
+        <div>
+          <button onClick={() => handleAddToCart(post)}>Add to cart</button>
+        </div>
+      </div>
+    </div>
+  )}
 </div>
-<span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
-<div className='dashprice' style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
-<div>
-<button onClick={() => handleAddToCart(post)}>Add to cart</button>
-</div>
-</div>
-)}
+
+
 {post.id === 'kVO4Bvo3xiG8Plw9rx2n' && (
 
 <div className="second-left-content" key={`${post.id}-second-left-content`}>

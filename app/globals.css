@@ -356,11 +356,14 @@ border: none;
 }
 
 .first-left-content {
-  grid-column: 1 / 2;
-  grid-row: 1 / 2;
-  display: grid;
   padding: 10px;
-  width: 100%;
+  width: 100%; /* Maintain full width */
+}
+
+.content-wrapper {
+  display: flex; /* Enable flexbox */
+  flex-direction: column; /* Stack vertically */
+  align-items: center; /* Center content horizontally (optional) */
 }
 
 .first-left-content h2{
