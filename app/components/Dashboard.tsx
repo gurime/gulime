@@ -239,7 +239,7 @@ return (
     </>
   ) : (
 useArticle
-.filter((post) => post.id === 'aNvAEn3uhvs9BDUhbikF' || post.id === '662oluIkcGSgIqdhYJQc' || post.id  === 'kVO4Bvo3xiG8Plw9rx2n' || post.id === 'WxtosmSgZqvFVHAjBvEn'
+.filter((post) => post.id === 'aNvAEn3uhvs9BDUhbikF' || post.id === '662oluIkcGSgIqdhYJQc' || post.id  === 'kVO4Bvo3xiG8Plw9rx2n' || post.id === 'XhvB1SPHwuwZlHiKZCyw'
 
 )
 .map((post) => (
@@ -260,12 +260,12 @@ useArticle
 )}
 
 <div className="container"> {/* Wrap the entire content section */}
-  {['662oluIkcGSgIqdhYJQc', 'WxtosmSgZqvFVHAjBvEn'].includes(post.id) && (
+  {['662oluIkcGSgIqdhYJQc', 'XhvB1SPHwuwZlHiKZCyw'].includes(post.id) && (
     <div className="first-left-content" key={`${post.id}-first-left-content`}>
       <h2>{post.catorgory}</h2>
       <div className="content-wrapper">
         <Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
-          <img src={post.coverimage} alt="" />
+          <img src={post.coverimage} alt="..." />
         </Link>
         <span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
         <div className='dashprice' style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
