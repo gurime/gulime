@@ -248,7 +248,7 @@ useArticle
 <div style={{ display: 'grid' }}>
 <h2>{post.catorgory}</h2>
 <span style={{ fontSize: '17px', lineHeight: '40px' }}>{post.title}</span>
-<span style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</span>
+<span className='dashprice' style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</span>
 </div>
 <Link href={`/pages/Details/${post.id}`} key={`${post.id}-link`}>
 <img src={post.coverimage} className="main-content-img" alt="" />
@@ -266,7 +266,7 @@ useArticle
 </Link>
 </div>
 <span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
-<div style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
+<div className='dashprice' style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
 <div>
 <button onClick={() => handleAddToCart(post)}>Add to cart</button>
 </div>
@@ -282,7 +282,7 @@ useArticle
 </Link>
 </div>
 <span style={{ fontSize: '20px', lineHeight: '40px' }}>{post.title}</span>
-<div style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
+<div className='dashprice' style={{ lineHeight: '50px', fontSize: '24px', color: '#464646' }}>{post.price}</div>
 <div>
 <button onClick={() => handleAddToCart(post)}>Add to cart</button>
 </div>

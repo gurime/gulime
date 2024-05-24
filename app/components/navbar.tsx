@@ -22,98 +22,82 @@ type SearchResult = {
 
 export default function Navbar() {
     const router = useRouter()
-    const [forceRender, setForceRender] = useState(false);
-    const [isSignedIn, setIsSignedIn] = useState(false);
-    const [isFooterVisible, setIsFooterVisible] = useState(false);
-    const [isOverlayActive, setIsOverlayActive] = useState(false);
-    const [searchTerm, setSearchTerm] = useState<string>('');
-    const [names, setNames] = useState<string[]>([]);
-    const [cartCount, setCartCount] = useState<number>(0);
+const [isSignedIn, setIsSignedIn] = useState(false);
+const [isFooterVisible, setIsFooterVisible] = useState(false);
+const [isOverlayActive, setIsOverlayActive] = useState(false);
+const [searchTerm, setSearchTerm] = useState<string>('');
+const [names, setNames] = useState<string[]>([]);
+const [cartCount, setCartCount] = useState<number>(0);
+const [loading, setLoading] = useState<boolean>(true);
+const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+    
+const overlayStyle: React.CSSProperties = {
+position: 'fixed',
+top: 0,
+left: 0,
+width: '100%',
+height: '100%',
+background: '#000',
+opacity: '.6',
+display: isOverlayActive ? 'block' : 'none',
+pointerEvents: 'none',
+};
 
-
-        const [loading, setLoading] = useState<boolean>(true);
-    const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+useEffect(() => {
+const unsubscribe = auth.onAuthStateChanged(async (user) => {
+setIsSignedIn(!!user);
+if (user) {
+try {
+const userDocRef = doc(db, "users", user.uid);
+const userDocSnapshot = await getDoc(userDocRef);
+if (userDocSnapshot.exists()) {
+const userData = userDocSnapshot.data(); setNames([userData.firstName, userData.lastName]);}
+} catch (error) {
+}
+}
+});
     
-    const overlayStyle: React.CSSProperties = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    background: '#000',
-    opacity: '.6',
-    display: isOverlayActive ? 'block' : 'none',
-    pointerEvents: 'none',
-    };
-    useEffect(() => {
-      const unsubscribe = auth.onAuthStateChanged(async (user) => {
-        setIsSignedIn(!!user);
-        if (user) {
-          try {
-            // Fetch user data from Firestore
-            const userDocRef = doc(db, "users", user.uid);
-    
-            // Fetch the user's document data
-            const userDocSnapshot = await getDoc(userDocRef);
-    
-            // Check if the document exists
-            if (userDocSnapshot.exists()) {
-              // Get the user data from the document
-              const userData = userDocSnapshot.data();
-              setNames([userData.firstName, userData.lastName]);
-            }
-          } catch (error) {
-            // Handle errors here
-          }
-        }
-      });
-    
-      const handleDocumentClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const isClickOutsideSearch = !target.closest('.search-container');
-        if (isClickOutsideSearch) {
-          setIsOverlayActive(false);
-          setSearchResults([]);
-          setSearchTerm('');
-        }
-      };
-    
-      document.body.addEventListener('click', handleDocumentClick);
-    
-      // Get the users collection
-      const usersCollectionRef = collection(db, "users");
-      const unsubscribeUsers = onSnapshot(usersCollectionRef, (snapshot) => {
-        const users = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    
-      });
-    
-      return () => {
-        document.body.removeEventListener('click', handleDocumentClick);
-        unsubscribe();
-        unsubscribeUsers(); // Unsubscribe from the users collection
-      };
-    }, [searchTerm, isOverlayActive]);
+const handleDocumentClick = (e: MouseEvent) => {
+const target = e.target as HTMLElement;
+const isClickOutsideSearch = !target.closest('search-container');
+if (isClickOutsideSearch) {
+setIsOverlayActive(false);
+setSearchResults([]);
+setSearchTerm('');
+}
+};
+document.body.addEventListener('click', handleDocumentClick);
+const usersCollectionRef = collection(db, "users");
+const unsubscribeUsers = onSnapshot(usersCollectionRef, (snapshot) => {
+const users = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+});
+return () => {
+document.body.removeEventListener('click', handleDocumentClick);
+unsubscribe();
+unsubscribeUsers(); // Unsubscribe from the users collection
+};
+}, [searchTerm, isOverlayActive]);
     
       
-    type InputChangeEvent = ChangeEvent<HTMLInputElement>;
-    type FormSubmitEvent = FormEvent<HTMLFormElement>;  
-    const handleSearchInputChange = (event: InputChangeEvent) => {
-    setSearchTerm(event.target.value);
-    if (event.target.value) {
-    handleSearch();
-    }
-    };
-      
-    const handleSearch = async (event?: FormSubmitEvent) => {
-    if (event) {
-    event.preventDefault();
-    }
-    try {
-    setLoading(true);
-    const results = await getArticle(searchTerm);
-    setSearchResults(results);
+type InputChangeEvent = ChangeEvent<HTMLInputElement>;
+type FormSubmitEvent = FormEvent<HTMLFormElement>;  
+const handleSearchInputChange = (event: InputChangeEvent) => {
+setSearchTerm(event.target.value);
+if (event.target.value) {
+handleSearch();
+}
+};
+
+const handleSearch = async (event?: FormSubmitEvent) => {
+if (event) {
+event.preventDefault();
+}
+try {
+setLoading(true);
+const results = await getArticle(searchTerm);
+setSearchResults(results);
     } catch (error) {
-    console.error('Error searching articles:', error);
+console.error('Error searching articles:', error);
     } finally {
     setLoading(false);
     }
@@ -175,7 +159,7 @@ export default function Navbar() {
     const handleLogout = async () => {
       try {
       await auth.signOut();
-      router.push('/pages/Login')
+      router.push('/pages/Login');
       } catch (error) {
       }
       };
@@ -226,7 +210,7 @@ return (
               ))}
             </span>
             <span className="sm-name" style={{ cursor: 'pointer' }} onClick={handleLogout}>
-              Log out
+              Log Out
             </span>
           </>
         )}
