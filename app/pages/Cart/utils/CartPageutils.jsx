@@ -188,7 +188,7 @@ export const useCartState = (  articleId,
   const addProductToViewed = useCallback(async (product, user) => {
     if (db && user?.uid) {
         try {
-            const userViewedRef = doc(db, 'BroswingHistory', user.uid);
+            const userViewedRef = doc(db, 'BrowsingHistory', user.uid);
             const userViewedSnap = await getDoc(userViewedRef);
 
             let viewedProducts = [];
