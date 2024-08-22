@@ -1,20 +1,15 @@
-import { getColorPrice, getColorUrl, getCurrentPrice } from '../../utils/carconfig';
+'use client'
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { arrayUnion, doc, getDoc, getFirestore, setDoc, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
-export default function CarCartBtn({ 
+export default function ProductCartBtn({ 
   articleId, 
-  product, 
-  selectedColor, 
-  selectedConfiguration,
-  configurationPrice,
-  setCurrentPrice
+  product
 }) {
   const router = useRouter();
   const [currentUser, setCurrentUser] = useState(null);
-  const [finalPrice, setFinalPrice] = useState(0);
 
   function formatNumber(num) {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -25,27 +20,8 @@ export default function CarCartBtn({
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
     });
-
-    // Calculate final price
-    const basePrice = getCurrentPrice(product, selectedConfiguration, selectedColor);
-    const colorPrice = getColorPrice(product, selectedColor);
-    let calculatedFinalPrice = basePrice;
-    
-    if (typeof colorPrice === 'number' && !isNaN(colorPrice)) {
-      calculatedFinalPrice += colorPrice;
-    }
-
-    setFinalPrice(calculatedFinalPrice);
-    
-    // Update the current price in the parent component
-    if (setCurrentPrice) {
-      setCurrentPrice(calculatedFinalPrice);
-    }
-
-
-
     return () => unsubscribe();
-  }, [product, selectedConfiguration, selectedColor, configurationPrice, setCurrentPrice]);
+  }, []); // Remove dependency on product
 
   const handleAddToCart = async () => {
     if (!currentUser) {
@@ -63,28 +39,26 @@ export default function CarCartBtn({
     try {
       const cartDoc = await getDoc(userCartRef);
      
-      const selectedColorUrl = getColorUrl(product, selectedColor);
-  
       const newItem = {
         id: articleId,
-        itemID: `${articleId}_${selectedColor || ''}_${selectedConfiguration || ''}_${Date.now()}`,
+        itemID: `${articleId}_${Date.now()}`,
         quantity: 1,
-        selectedColor: selectedColor || '',
-        selectedColorUrl: selectedColorUrl,
-        selectedConfiguration: selectedConfiguration || '',
-        configurationPrice: configurationPrice?.toString() || '',
-        title: product.title || product.cartitle || '',
-        content: product.content || '',
-        basePrice: product.basePrice?.toString() || '',
-        coverimage: product.coverimage || '',
-        category: product.category || '',
-        cardisplay: product.cardisplay || '',
-        carrange: product.carrange?.toString() || '',
-        carsecs: product.carsecs?.toString() || '',
-        topspeed: product.topspeed?.toString() || '',
-        price: finalPrice.toFixed(2)
+        title: product.title || "",
+        content: product.content || "",
+        content1: product.content1 || "",
+        content2: product.content2 || "",
+        content3: product.content3 || "",
+        content4: product.content4 || "",
+        content5: product.content5 || "",
+        content6: product.content6 || "",
+        price: product.price || 0,
+        coverimage: product.coverimage || "",
+        imgshowcase: product.imgshowcase || "",
+        imgshowcase1: product.imgshowcase1 || "",
+        imgshowcase2: product.imgshowcase2 || "",
+        category: product.category || ""
       };
-  
+
       // Ensure all fields are defined
       Object.keys(newItem).forEach(key => {
         if (newItem[key] === undefined) {
@@ -96,10 +70,7 @@ export default function CarCartBtn({
         const cartData = cartDoc.data();
         const cartItems = cartData.items || [];
         const existingItemIndex = cartItems.findIndex(
-          (item) => 
-            item.id === articleId && 
-            item.selectedColor === selectedColor && 
-            item.selectedConfiguration === selectedConfiguration
+          (item) => item.id === articleId 
         );
   
         if (existingItemIndex !== -1) {
@@ -125,10 +96,12 @@ export default function CarCartBtn({
   
       router.push('/pages/Cart/');
     } catch (error) {
+      console.error("Error adding item to cart:", error);
       // You might want to show an error message to the user here
     }
   };
-  const formattedPrice = formatNumber(finalPrice.toFixed(2));
+
+  const formattedPrice = formatNumber(parseFloat(product.price || 0).toFixed(2));
 
   return (
     <button className='add-to-cart-btn' onClick={handleAddToCart}>

@@ -1,6 +1,6 @@
 import Carosel from "./components/Carosel";
 import Footer from "./components/Footer";
-import Homepage from "./components/HoemPage";
+import Homepage from "./components/HomePage";
 import Navbar from "./components/Navbar";
 
 

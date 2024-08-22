@@ -2,13 +2,8 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'firebase/firestore';
 
-export const useCartState = (  articleId, 
-  product, 
-  selectedColor, 
-  selectedConfiguration,
-  configurationPrice,
-  selectedColorUrl,
-  finalPrice
+export const useCartState = (  
+  
  ) => {
   const [cartItems, setCartItems] = useState([]);
   const [savedItems, setSavedItems] = useState([]);
@@ -57,43 +52,53 @@ export const useCartState = (  articleId,
     await updateFirestoreDocument('carts', updatedCartItems);
   }, [cartItems, updateFirestoreDocument, updateCartCount]);
 
-  const handleAddToCart = useCallback(async (newItem, quantity = 1) => {
-    const updatedCartItems = [...cartItems];
-    const existingItemIndex = updatedCartItems.findIndex((item) => item.id === newItem.id);
-    
-    if (existingItemIndex !== -1) {
-      updatedCartItems[existingItemIndex].quantity += quantity;
-    } else {
-      updatedCartItems.push({
-        ...newItem,
-        id: articleId,
-        itemID: `${articleId}_${selectedColor || ''}_${selectedConfiguration || ''}_${Date.now()}`,
-        quantity: 1,
-        selectedColor: selectedColor || '',
-        selectedColorUrl: selectedColorUrl,
-        selectedConfiguration: selectedConfiguration || '',
-        configurationPrice: configurationPrice?.toString() || '',
-        title: newItem.title || product.cartitle || '',
-        content: newItem.content || '',
-        basePrice: newItem.basePrice?.toString() || '',
-        coverimage: newItem.coverimage || '',
-        category: newItem.category || '',
-        cardisplay: newItem.cardisplay || '',
-        carrange: newItem.carrange?.toString() || '',
-        carsecs: newItem.carsecs?.toString() || '',
-        topspeed: newItem.topspeed?.toString() || '',
- 
-      });
+  // add to cart from the save for later
+  const handleAddToCart = useCallback(async (savedItem, quantity = 1) => {
+    try {
+      const updatedCartItems = [...cartItems];
+      const itemIdentifier = savedItem.itemID || savedItem.id; // Use itemID for cars, id for other products
+      
+      const existingItemIndex = updatedCartItems.findIndex((item) => 
+        (item.itemID && item.itemID === savedItem.itemID) || (item.id && item.id === savedItem.id)
+      );
+      
+      if (existingItemIndex !== -1) {
+        updatedCartItems[existingItemIndex].quantity += quantity;
+      } else {
+        const newCartItem = {
+          ...savedItem,
+          quantity: quantity,
+        };
+  
+        // Ensure both id and itemID are present
+        if (!newCartItem.id) newCartItem.id = itemIdentifier;
+        if (!newCartItem.itemID) newCartItem.itemID = itemIdentifier;
+  
+        updatedCartItems.push(newCartItem);
+      }
+      
+      // Update Firestore first
+      await updateFirestoreDocument('carts', updatedCartItems);
+      
+      // If Firestore update is successful, update local state
+      setCartItems(updatedCartItems);
+      updateCartCount(updatedCartItems);
+      
+      // Remove item from saved list
+      await deleteFromSaved(itemIdentifier);
+      
+      setShowConfirmation('Product added to cart');
+      setTimeout(() => setShowConfirmation(false), 3000);
+    } catch (error) {
+      setShowConfirmation('Error adding item to cart. Please try again.');
+      setTimeout(() => setShowConfirmation(false), 3000);
     }
-    
-    setCartItems(updatedCartItems);
-    updateCartCount(updatedCartItems);
-    await updateFirestoreDocument('carts', updatedCartItems);
-    await deleteFromSaved(newItem.id);
-    setShowConfirmation('Product added to cart');
-    setTimeout(() => setShowConfirmation(false), 3000);
   }, [cartItems, updateFirestoreDocument, deleteFromSaved, updateCartCount]);
 
+  // add to cart from the save for later
+
+
+  // delete item
   const deleteFromCart = useCallback(async (itemID) => {
     const updatedCartItems = cartItems.filter((item) => item.itemID !== itemID);
     setCartItems(updatedCartItems);
@@ -103,17 +108,38 @@ export const useCartState = (  articleId,
     setTimeout(() => setShowConfirmation(false), 3000);
   }, [cartItems, updateFirestoreDocument, updateCartCount]);
 
+    // delete item
+
+
+  // save for later
+
   const handleSaveForLater = useCallback(async (itemID) => {
-    const itemToSave = cartItems.find((item) => item.itemID === itemID);
-    if (itemToSave) {
-      const updatedCartItems = cartItems.filter((item) => item.itemID !== itemID);
-      const updatedSavedItems = [...savedItems, itemToSave];
-      setCartItems(updatedCartItems);
-      setSavedItems(updatedSavedItems);
-      await updateFirestoreDocument('carts', updatedCartItems);
-      await updateFirestoreDocument('saved', updatedSavedItems);
+    try {
+      const itemToSave = cartItems.find((item) => item.id === itemID || item.itemID === itemID);
+      if (itemToSave) {
+        const updatedCartItems = cartItems.filter((item) => item.id !== itemID && item.itemID !== itemID);
+        const updatedSavedItems = [...savedItems, itemToSave];
+        
+        // Update Firestore first
+        await updateFirestoreDocument('carts', updatedCartItems);
+        await updateFirestoreDocument('saved', updatedSavedItems);
+        
+        // If Firestore updates are successful, update local state
+        setCartItems(updatedCartItems);
+        setSavedItems(updatedSavedItems);
+        updateCartCount(updatedCartItems);
+        
+        setShowConfirmation('Item saved for later');
+        setTimeout(() => setShowConfirmation(false), 3000);
+      }
+    } catch (error) {
+      setShowConfirmation('Error saving item for later. Please try again.');
+      setTimeout(() => setShowConfirmation(false), 3000);
     }
-  }, [cartItems, savedItems, updateFirestoreDocument]);
+  }, [cartItems, savedItems, updateFirestoreDocument, setShowConfirmation, updateCartCount]);
+
+    // save for later
+
 
   useEffect(() => {
     const auth = getAuth();
@@ -187,26 +213,32 @@ export const useCartState = (  articleId,
 
   const addProductToViewed = useCallback(async (product, user) => {
     if (db && user?.uid) {
-        try {
-            const userViewedRef = doc(db, 'BrowsingHistory', user.uid);
-            const userViewedSnap = await getDoc(userViewedRef);
-
-            let viewedProducts = [];
-            if (userViewedSnap.exists()) {
-                viewedProducts = userViewedSnap.data()?.products || [];
-            }
-
-            const isProductAlreadyViewed = viewedProducts.some(
-                (viewedProduct) => viewedProduct.id === product.id
-            );
-
-            if (!isProductAlreadyViewed) {
-                viewedProducts.push(product);
-                await setDoc(userViewedRef, { products: viewedProducts });
-            }
-        } catch (error) {
-            console.error("Error adding product to viewed:", error);
+      try {
+        const userViewedRef = doc(db, 'BrowsingHistory', user.uid);
+        const userViewedSnap = await getDoc(userViewedRef);
+  
+        let viewedProducts = [];
+        if (userViewedSnap.exists()) {
+          viewedProducts = userViewedSnap.data()?.products || [];
         }
+  
+        const isProductAlreadyViewed = viewedProducts.some(
+          (viewedProduct) => viewedProduct.id === product.id
+        );
+  
+        if (!isProductAlreadyViewed) {
+          // Ensure the product has the correct category
+          const productWithCategory = {
+            ...product,
+            category: product.category || "" // Default to "Technology" if no category is provided
+          };
+  
+          viewedProducts = [productWithCategory, ...viewedProducts.slice(0, 19)]; // Keep only the 20 most recent items
+          await setDoc(userViewedRef, { products: viewedProducts });
+        }
+      } catch (error) {
+        console.error("Error adding product to viewed:", error);
+      }
     }
   }, [db]);
 
@@ -220,7 +252,7 @@ export const useCartState = (  articleId,
   const fetchRecommendations = useCallback(async () => {
     if (db) {
         try {
-            const viewedProductsRef = doc(db, 'BroswingHistory', currentUser?.uid || '');
+            const viewedProductsRef = doc(db, 'BrowsingHistory', currentUser?.uid || '');
             const viewedProductsSnap = await getDoc(viewedProductsRef);
             const viewedProductsData = viewedProductsSnap.data();
             const viewedProducts = viewedProductsData?.products || [];
@@ -230,7 +262,6 @@ export const useCartState = (  articleId,
             const recommendedProductsData = await getRecommendedProducts(viewedProducts);
             setRecommendedProducts(recommendedProductsData);
         } catch (error) {
-            console.error("Error fetching recommendations:", error);
         }
     }
   }, [db, cartItems, savedItems, currentUser, getRecommendedProducts]);

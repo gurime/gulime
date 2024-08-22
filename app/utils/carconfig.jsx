@@ -110,6 +110,10 @@ export const getCurrentPrice = (carDetails, selectedConfig, selectedColor) => {
   return Math.max(totalPrice, 0);
 };
 export const getColorPrice = (carDetails, colorName) => {
+  if (!carDetails || !carDetails.colors || !colorName) {
+    return null;
+  }
+
   const colorInfo = carDetails.colors[colorName];
   if (typeof colorInfo === 'object' && colorInfo !== null) {
     for (const suffix of colorPriceSuffixes) {

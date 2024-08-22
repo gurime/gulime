@@ -23,7 +23,6 @@ export async function getArticle(id) {
 
     return null;
   } catch (error) {
-    console.error("Error fetching article: ", error);
     return null;
   }
 }

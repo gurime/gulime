@@ -6,7 +6,7 @@ import CarDetailsClient from "../CarDetailsClient";
 import ContentDisplay from "../../../components/ContentDisplay";
 import ReviewListing from "../../../components/ReviewListings";
 import Footer from "../../../components/Footer";
-
+import ProductCartBtn from '../../Cart/ProductCartBtn'
 
 export async function generateMetadata({ params }) {
   const articleId = params.id;
@@ -53,6 +53,20 @@ export default async function DetailsPage({ params }) {
     timestamp: post.timestamp ? post.timestamp.seconds : null,
   };
 
+  const formatPrice = (price) => {
+    // Ensure price is a number
+    const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+    
+    // Check if it's a valid number
+    if (isNaN(numPrice)) return null;
+    
+    // Format the number with commas and two decimal places
+    return numPrice.toLocaleString('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  };
+
   return (
     <>
       <Navbar />
@@ -68,7 +82,7 @@ export default async function DetailsPage({ params }) {
               <span className="rating-count">{product.ratingCount} </span>
             </div>
             <p className="detailproduct-price">
-              {product.price ? `$${product.price}` : null}
+            {product.price ? `Total Price: $${formatPrice(product.price)}` : null}
             </p>
             <CarDetailsClient 
               product={product}
@@ -76,6 +90,10 @@ export default async function DetailsPage({ params }) {
               images={images}
               formattedDate={formattedDate}
             />
+            <div style={{justifyContent:"flex-end",display:'flex'}}>  
+            {product?.product && <ProductCartBtn articleId={articleId} product={product} />}              </div>
+
+          
             <div className="product-delivery">
               <p>
                 <strong style={{padding:'3rem'}}>Delivery:</strong> Get it by {formattedDate}

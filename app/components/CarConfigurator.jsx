@@ -5,7 +5,8 @@ import {
   useCarDetails,
   getColorPrice,
   getColorButtonStyle,
-  getColorUrl,getCurrentPrice
+  getColorUrl,
+  getCurrentPrice
 } from '../utils/carconfig';
 
 const CarConfigurator = ({
@@ -25,16 +26,12 @@ const CarConfigurator = ({
     selectedConfig
   );
 
-  if (!carDetails || carDetails.category !== 'Cars' || !carDetails.colors) {
-    return null;
-  }
-
   const currentPrice = getCurrentPrice(carDetails, selectedConfig, selectedColor);
 
   return (
     <div className="configurator-grid">
       <div className="car-image">
-        {selectedColor && carDetails.colors[selectedColor] && (
+        {selectedColor && carDetails?.colors?.[selectedColor] && (
           <img
             src={getColorUrl(carDetails, selectedColor)}
             alt={`${carDetails.cartitle} in ${selectedColor}`}
@@ -44,21 +41,21 @@ const CarConfigurator = ({
       
       <div className="car-details">
         <div className="car-specs">
-          {carDetails.carrange && (
+          {carDetails?.carrange && (
             <div className="spec-item">
               <Zap />
               <p className="spec-value">{carDetails.carrange} mi</p>
               <p className="spec-label">Range</p>
             </div>
           )}
-          {carDetails.topspeed && (
+          {carDetails?.topspeed && (
             <div className="spec-item">
               <Wind />
               <p className="spec-value">{carDetails.topspeed} mph</p>
               <p className="spec-label">Top Speed</p>
             </div>
           )}
-          {carDetails.carsecs && (
+          {carDetails?.carsecs && (
             <div className="spec-item">
               <ArrowRight />
               <p className="spec-value">{carDetails.carsecs}s</p>
@@ -67,46 +64,48 @@ const CarConfigurator = ({
           )}
         </div>
         {sortedConfigKeys.map((key) => {
-        const config = carDetails.configurations[key];
-        
-        let formattedPrice = 'Price Not Available';
-        if (config?.price !== undefined) {
-          const numericPrice = typeof config.price === 'string' 
-            ? parseFloat(config.price.replace(/,/g, ''))
-            : config.price;
+          const config = carDetails?.configurations?.[key];
+          if (!config) return null;
           
-          if (!isNaN(numericPrice)) {
-            formattedPrice = `$${numericPrice.toLocaleString()}`;
+          let formattedPrice = '';
+          if (config.price !== undefined) {
+            const numericPrice = typeof config.price === 'string' 
+              ? parseFloat(config.price.replace(/,/g, ''))
+              : config.price;
+            
+            if (!isNaN(numericPrice)) {
+              formattedPrice = `$${numericPrice.toLocaleString()}`;
+            }
           }
-        }
 
-        return (
-          <div key={key} className="configuration-item">
-            <label>
-              <input
-                type="radio"
-                name="configuration"
-                value={key}
-                checked={selectedConfig === key}
-                onChange={() => setSelectedConfig(key)}
-              />
-              <span>{config.name}</span>
-              <span className="configuration-price">{formattedPrice}</span>
-            </label>
-          </div>
-        );
-      })}
+          return (
+            <div key={key} className="configuration-item">
+              <label>
+                <input
+                  type="radio"
+                  name="configuration"
+                  value={key}
+                  checked={selectedConfig === key}
+                  onChange={() => setSelectedConfig(key)}
+                />
+                <span>{config.name}</span>
+                {formattedPrice && <span className="configuration-price">{formattedPrice}</span>}
+              </label>
+            </div>
+          );
+        })}
 
         <div className="color-selector">
-          <h1 className="selected-color-name">{selectedColor}</h1>
-          <p className="color-inclusion">
-            {(() => {
-              const colorPrice = getColorPrice(carDetails, selectedColor);
-              if (colorPrice === null) return null;
-              if (colorPrice === 'Included') return 'Included';
-              return `$${colorPrice.toLocaleString()}`;
-            })()}
-          </p>
+          {selectedColor && <h1 className="selected-color-name">{selectedColor}</h1>}
+          {selectedColor && (
+            <p className="color-inclusion">
+              {(() => {
+                const colorPrice = getColorPrice(carDetails, selectedColor);
+                if (colorPrice === 'Included') return 'Included';
+                return colorPrice !== null ? `$${colorPrice.toLocaleString()}` : '';
+              })()}
+            </p>
+          )}
           <div className="color-options">
             {sortedColorKeys.map((color) => (
               <div key={color} className="color-option-container">
@@ -120,9 +119,11 @@ const CarConfigurator = ({
           </div>
         </div>
 
-        <div className="current-price">
-          <p>Current Price: ${getCurrentPrice(carDetails, selectedConfig, selectedColor).toLocaleString()}</p>
-        </div>
+        {currentPrice > 0 &&  (
+          <div className="current-price">
+            <p>${currentPrice.toLocaleString() || ''}</p>
+          </div>
+        )}
       </div>
     </div>
   );

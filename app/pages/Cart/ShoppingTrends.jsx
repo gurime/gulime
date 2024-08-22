@@ -2,13 +2,12 @@
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useCartState } from './utils/CartPageutils';
 
-export default function BrowsingHistoryRecommendations({ userViewedProducts }) {
-  useEffect(() => {
-    userViewedProducts.forEach((item) => {
-      // Empty forEach loop
-    });
-  }, [userViewedProducts]);
+export default function BrowsingHistoryRecommendations() {
+  const { 
+    userViewedProducts, 
+  } = useCartState();
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -17,10 +16,10 @@ export default function BrowsingHistoryRecommendations({ userViewedProducts }) {
         {userViewedProducts.length > 0 ? (
           <ul className='shopping-trends-list'>
             {userViewedProducts.map((product) => (
-              <li key={product.id || uuidv4()} className='shopping-trends-card'>
+              <li key={product.id && product.itemID} className='shopping-trends-card'>
                 <Link href={`/pages/ProductDetails/${product.id}`}>
                   <img 
-                    src={product.cardisplay || product.coverimage}
+                    src={product.coverimage || product.selectedColorUrl}
                     alt={product.title} 
                     className='shopping-trends-image' 
                   />

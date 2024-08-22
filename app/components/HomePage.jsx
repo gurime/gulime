@@ -35,6 +35,13 @@ const Homepage = () => {
   const leftProducts = useArticle.filter(product => ['jTY4uUE9E5FYBM0rVBXr','cTAttMOYTSo2ccGvWFqJ'].includes(product.id));
   const rightProducts = useArticle.filter(product => ['q7W8AVFUBjAg14Oy5sLW', 'G4BRbX5fnhJ5zUXoyya8'].includes(product.id));
 
+  
+  const formatPrice = (price) => {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    }).format(price);
+  };
   return (
     <>
       <div className='hero-grid'>
@@ -53,7 +60,9 @@ const Homepage = () => {
                       <img src={product.coverimage || product.cardisplay} alt={product.title} />
                     </Link>
                     <span style={{ fontSize: '20px', lineHeight: '40px', textAlign: 'center' }}>{product.title} {product.cartitle}</span>
-                    <div className='detailproduct-price'>${product.price || product.basePrice} </div>
+                    <div className='detailproduct-price'>               
+                             ${formatPrice(product.price || product.basePrice)}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -64,7 +73,9 @@ const Homepage = () => {
                 <div className="mainflex">
                   <div style={{ display: 'grid' }}>
                     <span className='dashcategory'>{mainProduct.category}</span>
-                    <span className='detailproduct-price'>${mainProduct.price}</span>
+                    <span className='detailproduct-price'>           
+                                 ${formatPrice(mainProduct.price)}
+                    </span>
                   </div>
                   <Link href={`/pages/ProductDetails/${mainProduct.id}`}>
                     <img src={mainProduct.coverimage} className="main-content-img" alt={mainProduct.title} />
@@ -87,7 +98,9 @@ const Homepage = () => {
                       <img src={product.coverimage} alt={product.title} />
                     </Link>
                     <span style={{ fontSize: '20px', lineHeight: '40px', textAlign: 'center' }}>{product.title} {product.cartitle}</span>
-                    <div className='detailproduct-price'>${product.price} {product.basePrice}</div>
+                    <div className='detailproduct-price'>             
+                               ${formatPrice(product.price || product.basePrice)}
+                    </div>
                   </div>
                 </div>
               ))}
