@@ -5,6 +5,7 @@ import { doc, getDoc } from "firebase/firestore";
 export async function getArticle(id) {
   const collectionNames = [
     "products",
+    "featured_products",
     "carts"
     // Pride page stops here
   ];

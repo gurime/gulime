@@ -4,7 +4,8 @@ import { db } from '../Config/firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import Link from 'next/link';
 import { RiseLoader } from 'react-spinners';
-
+import Carousel from '../components/HomeCarousel '
+import { useFirebaseFeaturedProducts } from '../hooks/CarouselHooks';
 async function getArticles() {
   try {
     const querySnapshot = await getDocs(collection(db, "products"));
@@ -17,6 +18,7 @@ async function getArticles() {
 const Homepage = () => {
   const [loading, setLoading] = useState(true);
   const [useArticle, setUseArticle] = useState([]);
+  const { products } = useFirebaseFeaturedProducts(5); // Fetch up to 5 featured products
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -44,6 +46,7 @@ const Homepage = () => {
   };
   return (
     <>
+    <Carousel items={products}/>
       <div className='hero-grid'>
         {loading ? (
           <div className="loader-container">
