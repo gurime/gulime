@@ -231,7 +231,7 @@ body, html {
  .carousel {
   position: relative;
   width: 100%;
-  height: 400px;
+  height: 100svh; /* Adjusts to full viewport height */
   overflow: hidden;
 }
 
@@ -285,6 +285,31 @@ body, html {
   color: inherit;
 }
 
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+  z-index: 10;
+}
+
+.carousel-nav.prev {
+  left: 10px;
+}
+
+.carousel-nav.next {
+  right: 10px;
+}
+
+.carousel-nav:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
 @media (max-width: 768px) {
   .carousel {
     height: 300px;
@@ -298,6 +323,7 @@ body, html {
     font-size: 14px;
   }
 }
+
  /* carousel stops here */
  .hero-grid {
   display: grid;
