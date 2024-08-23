@@ -6,7 +6,7 @@ import { MoveLeft, MoveRight } from 'lucide-react';
 export default function HomeCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
-  const { products, loading, error } = useFirebaseFeaturedProducts(5); // Fetch up to 5 featured products
+  const { products, loading, error } = useFirebaseFeaturedProducts(5); 
 
   useEffect(() => {
     if (products.length === 0 || isPaused) return;
@@ -44,7 +44,7 @@ export default function HomeCarousel() {
         <Link href={`/pages/ProductDetails/${product.id}`} key={product.id} passHref>
           <div className={`carousel-item ${index === currentIndex ? 'active' : ''}`}>
             <img 
-              src={product.featuredimage} 
+              src={product.coverimage} 
               alt={product.featuredtitle} 
             />
             <div className="carousel-content">

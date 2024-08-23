@@ -6,6 +6,7 @@ import CarDetailsClient from "../CarDetailsClient";
 import ContentDisplay from "../../../components/ContentDisplay";
 import ReviewListing from "../../../components/ReviewListings";
 import Footer from "../../../components/Footer";
+import TrackList from "../../../components/TrackList";
 import ProductCartBtn from '../../Cart/ProductCartBtn'
 
 export async function generateMetadata({ params }) {
@@ -91,7 +92,8 @@ export default async function DetailsPage({ params }) {
               formattedDate={formattedDate}
             />
             <div style={{justifyContent:"flex-end",display:'flex'}}>  
-           <ProductCartBtn articleId={articleId} product={product} />              </div>
+           <ProductCartBtn articleId={articleId} product={product} />              
+           </div>
 
           
             <div className="product-delivery">
@@ -123,7 +125,8 @@ export default async function DetailsPage({ params }) {
               />
             </ul>
           </div>
-        </div>
+          {product?.tracks  &&(<TrackList tracks={product.tracks} />)}
+          </div>
       </div>
       <ReviewListing articleId={articleId}/>
       <Footer />

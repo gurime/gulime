@@ -100,7 +100,7 @@ export const useCartState = (
 
   // delete item
   const deleteFromCart = useCallback(async (itemID) => {
-    const updatedCartItems = cartItems.filter((item) => item.itemID !== itemID);
+    const updatedCartItems = cartItems.filter((item) => item.id !== itemID && item.itemID !== itemID);
     setCartItems(updatedCartItems);
     updateCartCount(updatedCartItems);
     await updateFirestoreDocument('carts', updatedCartItems);

@@ -1,10 +1,10 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import CarConfigurator from '../../components/CarConfigurator';
 import CarCartBtn from '../Cart/CarCartBtn';
 import { getCurrentPrice, getColorPrice } from '../../utils/carconfig';
 
-export default function CarDetailsClient({ product, articleId }) {
+export default function CarDetailsClient({ product, articleId, onSeen }) {
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedConfig, setSelectedConfig] = useState('');
   const [configurationPrice, setConfigurationPrice] = useState(0);
@@ -35,9 +35,12 @@ export default function CarDetailsClient({ product, articleId }) {
     setCurrentPrice(calculatedPrice);
   }, [product, selectedConfig, selectedColor, configurationPrice]);
 
-  const handleConfigChange = (config) => {
+  const handleConfigChange = useCallback((config) => {
     setSelectedConfig(config);
-  };
+    if (onSeen) {
+      onSeen(); // Notify the parent component
+    }
+  }, [onSeen]);
 
   const articleProduct = {
     ...product,
@@ -63,10 +66,7 @@ export default function CarDetailsClient({ product, articleId }) {
           <p>Current Price: ${currentPrice.toFixed(2)}</p>
         </div>
       )}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'flex-end'
-      }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         {isConfigSelected && (
           <CarCartBtn 
             articleId={articleId}
