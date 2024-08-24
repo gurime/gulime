@@ -37,22 +37,22 @@ export default function HomeCarousel() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
   if (products.length === 0) return <div>No featured products available</div>;
+  const currentProduct = products[currentIndex];
 
   return (
     <div className="carousel">
       {products.map((product, index) => (
-        <Link href={`/pages/ProductDetails/${product.id}`} key={product.id} passHref>
           <div className={`carousel-item ${index === currentIndex ? 'active' : ''}`}>
             <img 
-              src={product.coverimage} 
-              alt={product.featuredtitle} 
+              src={currentProduct.featuredcoverimage} 
             />
             <div className="carousel-content">
-              <h2>{product.title}</h2>
-              <p>{product.description}</p>
+              <h2>{currentProduct.title}</h2>
+              <Link href={`/pages/ProductDetails/${currentProduct.id}`}>
+            <button className='add-to-cart-btn'>Shop Now</button>
+          </Link>
             </div>
           </div>
-        </Link>
       ))}
 
       {/* Navigation Buttons */}

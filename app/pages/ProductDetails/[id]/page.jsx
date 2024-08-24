@@ -92,8 +92,10 @@ export default async function DetailsPage({ params }) {
               formattedDate={formattedDate}
             />
             <div style={{justifyContent:"flex-end",display:'flex'}}>  
-           <ProductCartBtn articleId={articleId} product={product} />              
-           </div>
+            {product &&  product !== 'carsecs' ? (
+        <ProductCartBtn articleId={articleId} product={product} />
+      ) : null}       
+  </div>
 
           
             <div className="product-delivery">

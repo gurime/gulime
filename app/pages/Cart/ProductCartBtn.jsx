@@ -104,6 +104,7 @@ export default function ProductCartBtn({
   const formattedPrice = formatNumber(parseFloat(product.price || 0).toFixed(2));
 
   return (
+    
     <button className='add-to-cart-btn' onClick={handleAddToCart}>
       Add to cart ${formattedPrice}
     </button>

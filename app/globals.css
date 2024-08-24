@@ -230,9 +230,10 @@ body, html {
  /* navbar stops here */
  .carousel {
   position: relative;
-  width: 80rem;
-  height: 500px; /* Adjusts to full viewport height */
+  width: 78rem;
+  height: 500px;
   overflow: hidden;
+  margin: auto;
 }
 
 .carousel-item {
