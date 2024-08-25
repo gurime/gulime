@@ -44,7 +44,7 @@ export default function HomeCarousel() {
       {products.map((product, index) => (
           <div className={`carousel-item ${index === currentIndex ? 'active' : ''}`}>
             <img 
-              src={currentProduct.featuredcoverimage} 
+              src={currentProduct.featcoverimage} 
             />
             <div className="carousel-content">
               <h2>{currentProduct.title}</h2>

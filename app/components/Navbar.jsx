@@ -228,7 +228,7 @@ export default function Navbar() {
                         <div className="product-card">
                           <img className="product-image" src={product.coverimage} alt={product.title} />
                           <div className="product-info">
-                            <h3 className="product-title">{product.title}</h3>
+                            <h3 className="product-title" style={{textAlign:'center'}}>{product.title}</h3>
                             <p className="product-price">${product.price}</p>
                           </div>
                         </div>

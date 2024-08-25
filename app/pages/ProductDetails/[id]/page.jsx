@@ -67,6 +67,7 @@ export default async function DetailsPage({ params }) {
       maximumFractionDigits: 0
     });
   };
+  const isCar = Boolean(product.configurations || product.colors || product.cartitle);
 
   return (
     <>
@@ -85,17 +86,18 @@ export default async function DetailsPage({ params }) {
             <p className="detailproduct-price">
             {product.price ? `Total Price: $${formatPrice(product.price)}` : null}
             </p>
-            <CarDetailsClient 
-              product={product}
-              articleId={articleId}
-              images={images}
-              formattedDate={formattedDate}
-            />
-            <div style={{justifyContent:"flex-end",display:'flex'}}>  
-            {product &&  product !== 'carsecs' ? (
-        <ProductCartBtn articleId={articleId} product={product} />
-      ) : null}       
-  </div>
+            {isCar ? (
+              <CarDetailsClient 
+                product={product}
+                articleId={articleId}
+                images={images}
+                formattedDate={formattedDate}
+              />
+            ) : (
+          
+                <ProductCartBtn articleId={articleId} product={product} />
+           
+            )}
 
           
             <div className="product-delivery">

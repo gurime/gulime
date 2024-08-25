@@ -122,6 +122,12 @@ body, html {
     transition: transform 0.2s;
   }
 
+  .product-card img{
+    width: 50%;
+    margin: auto;
+
+  }
+
   .product-card:hover {
     transform: translateY(-5px);
   }
@@ -131,20 +137,17 @@ body, html {
 
 
   .product-title {
-    font-size: 1rem;
+    font-size: 13px;
     font-weight: bold;
     margin: 0 0 0.5rem 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
     color: #111;
   }
 
   .product-price {
     font-size: 1rem;
-    color: #666;
+    color: #dc3545;
     margin: 0;
+    text-align: center;
   }
 
   @keyframes slideIn {
@@ -230,7 +233,7 @@ body, html {
  /* navbar stops here */
  .carousel {
   position: relative;
-  width: 78rem;
+  width: 100%;
   height: 500px;
   overflow: hidden;
   margin: auto;
@@ -244,7 +247,6 @@ body, html {
   height: 100%;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -338,6 +340,10 @@ body, html {
     display: flex;
     flex-direction: column;
   }
+
+  .mid-column{
+    flex-direction: column;
+  }
 }
 
 .left-column, .right-column {
@@ -384,6 +390,31 @@ body, html {
   border-bottom: solid 1px #8b8b8b;
 }
 
+.first-left-content:last-child, .second-left-content:last-child {
+  border-bottom: none;
+}
+
+.mid-column{
+  display: flex;
+}
+
+.mid-content img{
+  width: 100%;
+  max-height: 200px;
+    object-fit: contain;
+}
+
+.mid-content{
+  width: 100%;
+  border-top:solid 1px  #8b8b8b;
+  border-bottom: 1px solid #8b8bb8;
+  border-right:  1px solid #8b8bb8;
+}
+
+
+
+
+
 .content-wrapper {
   display: flex;
   flex-direction: column;
@@ -396,7 +427,7 @@ body, html {
   object-fit: contain;
 }
 
-.first-left-content button, .second-left-content button {
+/* .first-left-content button, .second-left-content button {
   background-color: #1508ce;
   border: none;
   outline: none;
@@ -407,7 +438,7 @@ body, html {
   font-weight: bold;
   text-transform: uppercase;
   cursor: pointer;
-}
+} */
 
 .detailproduct-price {
   margin: 10px 0;

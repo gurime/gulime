@@ -132,7 +132,7 @@ export default function CarCartBtn({
 
   return (
     <button className='add-to-cart-btn' onClick={handleAddToCart}>
-      Add to cart ${formattedPrice}
+      Add to cart 
     </button>
   );
 }

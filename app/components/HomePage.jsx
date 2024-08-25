@@ -36,6 +36,7 @@ const Homepage = () => {
   const mainProduct = useArticle.find(product => product.id === 'd4cY1CZ4eQnX26ipigAE');
   const leftProducts = useArticle.filter(product => ['jTY4uUE9E5FYBM0rVBXr','cTAttMOYTSo2ccGvWFqJ'].includes(product.id));
   const rightProducts = useArticle.filter(product => ['q7W8AVFUBjAg14Oy5sLW', 'G4BRbX5fnhJ5zUXoyya8'].includes(product.id));
+  const midProducts = useArticle.filter(product => ['swVsmBX5UVUH5o8ncG2m', 'G4BRbX5fnhJ5zUXoyya8'].includes(product.id));
 
   
   const formatPrice = (price) => {
@@ -109,9 +110,28 @@ const Homepage = () => {
               ))}
             </div>
           </>
-        )}
+        )} 
+    
       </div>
-    </>
+
+<div className="mid-column">
+{midProducts.map((product) => (
+<div key={product.id} className="mid-content">
+<div className="content-wrapper">
+<span className='dashcategory'>{product.category}</span>
+<Link href={`/pages/ProductDetails/${product.id}`}>
+<img src={product.coverimage} alt={product.title} />
+</Link>
+<span style={{ fontSize: '20px', lineHeight: '40px', textAlign: 'center' }}>{product.title} {product.cartitle}</span>
+<div className='detailproduct-price'>             
+${formatPrice(product.price || product.basePrice)}
+</div>
+</div>
+</div>
+))}
+</div>
+srg
+</>
   );
 };
 
