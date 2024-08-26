@@ -100,16 +100,16 @@ export default async function DetailsPage({ params }) {
             )}
 
           
-            <div className="product-delivery">
-              <p>
-                <strong style={{padding:'3rem'}}>Delivery:</strong> Get it by {formattedDate}
-              </p>
-              <p>
-                <strong style={{padding:'3rem'}}>Pickup:</strong> Free pickup today at <a href="#">Gulime</a>
-              </p>
-            </div>
-          </div>
-          <div className="product-details-info">
+<div className="product-delivery">
+<p>
+<strong style={{padding:'3rem'}}>Delivery:</strong> Get it by {formattedDate} 
+</p>
+<p>
+<strong style={{padding:'3rem'}}>Pickup:</strong> Free pickup today at <a href="#">Gulime</a>
+</p>
+</div>
+</div>
+<div className="product-details-info">
             <p>
               <strong style={{padding:'3rem'}}>About this item:</strong>
             </p>

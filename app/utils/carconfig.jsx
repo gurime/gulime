@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getFirestore, getDoc, doc } from 'firebase/firestore';
+import { color } from 'framer-motion';
 
 const colorImageSuffixes = [
   'SolidBlackImage',
@@ -19,16 +20,23 @@ const colorPriceSuffixes = [
   'StealthGreyPrice',
 ];
 
+
+const rimImageSuffixes = ['colorImages'];
+const rimPriceSuffixes = ['RimPrice'];
+
 export const useCarDetails = (
   id,
   setSelectedColor,
   setSelectedConfig,
+  setSelectedRim,
   selectedColor,
-  selectedConfig
+  selectedConfig,
+  selectedRim
 ) => {
   const [carDetails, setCarDetails] = useState(null);
   const [sortedColorKeys, setSortedColorKeys] = useState([]);
   const [sortedConfigKeys, setSortedConfigKeys] = useState([]);
+  const [sortedRimKeys, setSortedRimKeys] = useState([]);
 
   useEffect(() => {
     const fetchCarDetails = async () => {
@@ -52,17 +60,29 @@ export const useCarDetails = (
               setSelectedConfig(configKeys[0]);
             }
           }
+          if (carData.rims) {
+            const rimKeys = Object.keys(carData.rims).sort();
+            setSortedRimKeys(rimKeys);
+            if (!selectedRim) {
+              setSelectedRim(rimKeys[0]);
+            }
+          }
         }
       }
     };
 
     fetchCarDetails();
-  }, [id, setSelectedColor, setSelectedConfig, selectedColor, selectedConfig]);
+  }, [id, setSelectedColor, setSelectedConfig, setSelectedRim, selectedColor, selectedConfig, selectedRim]);
 
-  return { carDetails, sortedColorKeys, sortedConfigKeys };
+  return { carDetails, sortedColorKeys, sortedConfigKeys, sortedRimKeys };
 };
 
-
+export const getRimSize = (carDetails, rimName) => {
+  if (!carDetails || !carDetails.rims || !carDetails.rims[rimName]) {
+    return null;
+  }
+  return carDetails.rims[rimName].rimSize || null;
+};
 export const getColorButtonStyle = (color) => {
   if (color === 'Solid Black') return { backgroundColor: '#000000' };
   if (color === 'Ultra Red') return { backgroundColor: '#d51c1c' };
@@ -71,6 +91,23 @@ export const getColorButtonStyle = (color) => {
   if (color === 'Quicksilver') return { backgroundColor: 'silver' };
   if (color === 'Pearl White Multi-Coat') return { backgroundColor: '#d8d5d5' };
   return { backgroundColor: color.toLowerCase() };
+};
+
+
+export const getRimButtonStyle = (carDetails, rim, selectedColor) => {
+  if (!carDetails || !carDetails.rims || !carDetails.rims[rim]) {
+    return {};
+  }
+
+  const rimData = carDetails.rims[rim];
+  const colorImage = rimData.colorImages && rimData.colorImages[selectedColor];
+
+  if (colorImage) {
+    return { backgroundImage: `url('${colorImage}')` };
+  }
+
+  // Fallback to default rim image if color-specific image is not available
+  return { backgroundImage: `url('${rimData.RimImage}')` };
 };
 
 export const getColorUrl = (carDetails, colorName) => {
@@ -89,8 +126,92 @@ export const getColorUrl = (carDetails, colorName) => {
   throw new Error(`Color image for ${colorName} not found`);
 };
 
-export const getCurrentPrice = (carDetails, selectedConfig, selectedColor) => {
-  // Start with the base price of the selected configuration
+export const getCarImageUrl = (carDetails, selectedRim, selectedColor) => {
+
+  if (!carDetails || !carDetails.rims) {
+    return null;
+  }
+
+  const rimData = carDetails.rims[selectedRim];
+  if (!rimData) {
+    return null;
+  }
+
+
+  if (rimData.colorImages) {
+    // Normalize the selected color (remove spaces, convert to lowercase)
+    const normalizedSelectedColor = selectedColor.replace(/\s+/g, '').toLowerCase();
+
+    // Find a matching color, ignoring spaces and case
+    const matchingColor = Object.keys(rimData.colorImages).find(color => 
+      color.replace(/\s+/g, '').toLowerCase() === normalizedSelectedColor
+    );
+
+    if (matchingColor) {
+      return rimData.colorImages[matchingColor];
+    }
+
+    // If no exact match, try to find a partial match
+    const partialMatch = Object.keys(rimData.colorImages).find(color => 
+      color.toLowerCase().includes(normalizedSelectedColor) ||
+      normalizedSelectedColor.includes(color.toLowerCase())
+    );
+
+    if (partialMatch) {
+      console.log('Found partial match for color:', partialMatch);
+      return rimData.colorImages[partialMatch];
+    }
+  }
+
+  // If no color-specific image found, fall back to the default rim image
+  if (rimData.RimImage) {
+    return rimData.RimImage;
+  }
+
+  return null;
+};
+
+
+export const getRimThumbnailUrl = (carDetails, rimName) => {
+  if (!carDetails || !carDetails.rims || !carDetails.rims[rimName]) {
+    return null;
+  }
+
+  return carDetails.rims[rimName].RimImage;
+};
+
+
+export const getRimUrl = (carDetails, rimName, selectedColor) => {
+  if (!carDetails || !carDetails.rims || !carDetails.rims[rimName]) {
+    return null;
+  }
+
+  const rimData = carDetails.rims[rimName];
+  const colorImage = rimData.colorImages && rimData.colorImages[selectedColor];
+
+  return colorImage || rimData.RimImage;
+};
+
+
+
+
+export const getRimPrice = (carDetails, rimName) => {
+  if (!carDetails || !carDetails.rims || !carDetails.rims[rimName]) {
+    return null;
+  }
+
+  const rimPrice = carDetails.rims[rimName].rimPrice;
+
+  if (rimPrice === 'Included') {
+    return 'Included';
+  }
+
+  return typeof rimPrice === 'number' ? rimPrice : null;
+};
+
+
+
+export const getCurrentPrice = (carDetails, selectedConfig, selectedColor, selectedRim) => {
   let totalPrice = 0;
   
   if (selectedConfig && carDetails.configurations?.[selectedConfig]) {
@@ -100,13 +221,16 @@ export const getCurrentPrice = (carDetails, selectedConfig, selectedColor) => {
       : (typeof configPrice === 'number' ? configPrice : 0);
   }
 
-  // Add color price if it's not included
   const colorPrice = getColorPrice(carDetails, selectedColor);
   if (typeof colorPrice === 'number') {
     totalPrice += colorPrice;
   }
 
-  // Ensure the price is not negative
+  const rimPrice = getRimPrice(carDetails, selectedRim);
+  if (typeof rimPrice === 'number') {
+    totalPrice += rimPrice;
+  }
+
   return Math.max(totalPrice, 0);
 };
 export const getColorPrice = (carDetails, colorName) => {

@@ -9,6 +9,7 @@ export default function CarDetailsClient({ product, articleId, onSeen }) {
   const [selectedConfig, setSelectedConfig] = useState('');
   const [configurationPrice, setConfigurationPrice] = useState(0);
   const [currentPrice, setCurrentPrice] = useState(0);
+  const [selectedRim, setSelectedRim] = useState(null);
 
   useEffect(() => {
     if (product.configurations && selectedConfig) {
@@ -60,12 +61,10 @@ export default function CarDetailsClient({ product, articleId, onSeen }) {
         setSelectedColor={setSelectedColor}
         selectedConfig={selectedConfig}
         setSelectedConfig={handleConfigChange}
+        selectedRim={selectedRim}
+  setSelectedRim={setSelectedRim}
       />
-      {currentPrice > 0 && (
-        <div>
-          <p>Current Price: ${currentPrice.toFixed(2)}</p>
-        </div>
-      )}
+    
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
         {isConfigSelected && (
           <CarCartBtn 
@@ -75,6 +74,8 @@ export default function CarDetailsClient({ product, articleId, onSeen }) {
             selectedConfiguration={selectedConfig} 
             configurationPrice={configurationPrice}
             currentPrice={currentPrice}
+            selectedRim={selectedRim}  // Add this line
+
           />
         )}
       </div>

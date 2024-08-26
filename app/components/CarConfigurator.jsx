@@ -6,36 +6,52 @@ import {
   getColorPrice,
   getColorButtonStyle,
   getColorUrl,
-  getCurrentPrice
+  getCurrentPrice,
+  getRimButtonStyle,
+  getRimUrl,
+  getRimPrice,
+  getCarImageUrl,
+  getRimThumbnailUrl,
+  getRimSize
 } from '../utils/carconfig';
 
 const CarConfigurator = ({
   selectedColor,
   setSelectedColor,
   selectedConfig,
-  setSelectedConfig
+  setSelectedConfig,
+  selectedRim,
+  setSelectedRim
 }) => {
   const params = useParams();
   const id = params.id;
 
-  const { carDetails, sortedColorKeys, sortedConfigKeys } = useCarDetails(
+  const { carDetails, sortedColorKeys, sortedConfigKeys, sortedRimKeys } = useCarDetails(
     id,
     setSelectedColor,
     setSelectedConfig,
+    setSelectedRim,
     selectedColor,
-    selectedConfig
+    selectedConfig,
+    selectedRim
   );
 
-  const currentPrice = getCurrentPrice(carDetails, selectedConfig, selectedColor);
+  const currentPrice = getCurrentPrice(carDetails, selectedConfig, selectedColor, selectedRim);
+  const carImageUrl = getCarImageUrl(carDetails, selectedRim, selectedColor);
+  const rimSize = getRimSize(carDetails, selectedRim);  // Get the rim size
+  const rimPrice = getRimPrice(carDetails, selectedRim);
 
   return (
     <div className="configurator-grid">
-      <div className="car-image">
-        {selectedColor && carDetails?.colors?.[selectedColor] && (
-          <img
-            src={getColorUrl(carDetails, selectedColor)}
-            alt={`${carDetails.cartitle} in ${selectedColor}`}
-          />
+         <div className="car-image">
+        {carImageUrl ? (
+               <img
+               src={carImageUrl}
+               alt={`${carDetails?.cartitle || 'Car'} in ${selectedColor} with ${selectedRim}`}
+               className="main-car-image"
+             />
+        ) : (
+          <div className="image-placeholder">Image not available</div>
         )}
       </div>
       
@@ -95,30 +111,57 @@ const CarConfigurator = ({
           );
         })}
 
-        <div className="color-selector">
-          {selectedColor && <h1 className="selected-color-name">{selectedColor}</h1>}
-          {selectedColor && (
-            <p className="color-inclusion">
-              {(() => {
-                const colorPrice = getColorPrice(carDetails, selectedColor);
-                if (colorPrice === 'Included') return 'Included';
-                return colorPrice !== null ? `$${colorPrice.toLocaleString()}` : '';
-              })()}
-            </p>
-          )}
-          <div className="color-options">
-            {sortedColorKeys.map((color) => (
-              <div key={color} className="color-option-container">
-                <button
-                  className={`color-option ${selectedColor === color ? 'selected' : ''}`}
-                  style={getColorButtonStyle(color)}
-                  onClick={() => setSelectedColor(color)}
-                />
-              </div>
-            ))}
-          </div>
+<div className="color-selector">
+        {selectedColor && <h2 className="selected-color-name">{selectedColor}</h2>}
+        {selectedColor && (
+          <p className="color-inclusion">
+            {(() => {
+              const colorPrice = getColorPrice(carDetails, selectedColor);
+              if (colorPrice === 'Included') return 'Included';
+              return colorPrice !== null ? `$${colorPrice.toLocaleString()}` : '';
+            })()}
+          </p>
+        )}
+        <div className="color-options">
+          {sortedColorKeys.map((color) => (
+            <div key={color} className="color-option-container">
+              <button
+                className={`color-option ${selectedColor === color ? 'selected' : ''}`}
+                style={getColorButtonStyle(color)}
+                onClick={() => setSelectedColor(color)}
+              />
+            </div>
+          ))}
         </div>
+      </div>
 
+<div className="rim-selector">{rimPrice !== null && (
+          <p className="rim-price">
+            {rimPrice === 'Included' ? 'Included' : `$${rimPrice.toLocaleString()}`}
+          </p>
+        )}
+{selectedRim && <h2 className="selected-rim-name">   
+{rimSize && <h2 className="rim-size">{rimSize}" Wheels</h2>}  
+{selectedRim}</h2>}
+
+        <div className="rim-options">
+          {sortedRimKeys.map((rim) => (
+            <div key={rim} className="rim-option-container">
+              <button
+                className={`rim-option ${selectedRim === rim ? 'selected' : ''}`}
+                onClick={() => setSelectedRim(rim)}
+              >
+               
+                <img 
+                  src={getRimThumbnailUrl(carDetails, rim)}
+                  alt={rim} 
+                  className="rim-thumbnail"
+                />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
         {currentPrice > 0 &&  (
           <div className="current-price">
             <p>${currentPrice.toLocaleString() || ''}</p>

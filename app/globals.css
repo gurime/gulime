@@ -440,6 +440,19 @@ body, html {
   cursor: pointer;
 } */
 
+@media(max-width:768px){
+
+  .first-left-content, .second-left-content{
+    border-bottom: solid 1px #000000;
+
+  }
+  .main-flex{
+      border-bottom: solid 1px #000000;
+      border-top: solid 1px #000000;
+    
+  }
+}
+
 .detailproduct-price {
   margin: 10px 0;
 }
@@ -866,6 +879,61 @@ font-size: 18px;
 .car-image{
   display: flex;
   align-items: center;
+  width: 100%;
+  height: 300px; /* Adjust as needed */
+}
+
+.main-car-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.rim-selector {
+  margin-top: 20px;
+}
+
+.rim-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.rim-price{
+  text-align: center;
+}
+
+.rim-option-container {
+  width: 60px;
+  height: 60px;
+}
+
+.rim-option {
+  width: 100%;
+  height: 100%;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  padding: 0;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+
+.rim-thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.selected-rim-name {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.rim-inclusion {
+  text-align: center;
+  margin-bottom: 15px;
 }
 
 .car-image img {

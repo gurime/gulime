@@ -36,7 +36,7 @@ const Homepage = () => {
   const mainProduct = useArticle.find(product => product.id === 'd4cY1CZ4eQnX26ipigAE');
   const leftProducts = useArticle.filter(product => ['jTY4uUE9E5FYBM0rVBXr','cTAttMOYTSo2ccGvWFqJ'].includes(product.id));
   const rightProducts = useArticle.filter(product => ['q7W8AVFUBjAg14Oy5sLW', 'G4BRbX5fnhJ5zUXoyya8'].includes(product.id));
-  const midProducts = useArticle.filter(product => ['swVsmBX5UVUH5o8ncG2m', 'G4BRbX5fnhJ5zUXoyya8'].includes(product.id));
+  const midProducts = useArticle.filter(product => ['swVsmBX5UVUH5o8ncG2m', 'NKkDvQWxxynRwvGRrT10'].includes(product.id));
 
   
   const formatPrice = (price) => {
@@ -130,7 +130,6 @@ ${formatPrice(product.price || product.basePrice)}
 </div>
 ))}
 </div>
-srg
 </>
   );
 };

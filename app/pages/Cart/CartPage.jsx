@@ -40,21 +40,29 @@ function formatNumber(value) {
 }
 
 const getColorImage = (item) => {
+  // First, check for selectedColorUrl
   if (item.selectedColorUrl && typeof item.selectedColorUrl === 'string') {
     return item.selectedColorUrl;
   }
-  
+  // If selectedColorUrl doesn't exist, use cardisplay
   if (item.cardisplay) {
     return item.cardisplay;
   }
   
+  // If cardisplay doesn't exist, use coverimage
   if (item.coverimage) {
     return item.coverimage;
+  }
+  
+  // If no car image is found, fall back to selectedRimUrl
+  if (item.selectedRimUrl && typeof item.selectedRimUrl === 'string') {
+    return item.selectedRimUrl;
   }
   
   // If no valid image URL is found, return a default image or null
   return null;
 };
+
 
 export default function CartPage(items) {
   const {
@@ -118,9 +126,13 @@ export default function CartPage(items) {
                     variants={fadeInOut} 
                     className="cart-item"
                   >
-                    <Link href={`/pages/ProductDetails/${item.id || item.itemID}`}>
-                      <img src={getColorImage(item)} className="cart-image" alt={item.title} />
-                    </Link>
+          <Link href={`/pages/ProductDetails/${item.id || item.itemID}`}>
+              <img 
+                src={getColorImage(item)} 
+                className="cart-image" 
+                alt={`${item.title} - ${item.selectedRim || item.selectedColor || ''}`} 
+              />
+            </Link>
                     <div className="cart-item-details">
                       <h2 className="cart-item-title">
                         {item.title || item.cartitle}
@@ -130,6 +142,7 @@ export default function CartPage(items) {
                       </p> 
                       {item.selectedColor && <p>Color: {item.selectedColor}</p>}
                       {item.selectedConfiguration && <p>Configuration: {item.selectedConfiguration}</p>}
+                      {item.selectedRim && <p>Rims: {item.selectedRim}</p>}
                       <div className="cart-item-actions">
                         <button onClick={() => handleSaveForLater(item.id)} className="cart-item-save">Save for Later</button>
                         <button onClick={() => deleteFromCart(item.id)} className="cart-item-remove">Delete</button>
