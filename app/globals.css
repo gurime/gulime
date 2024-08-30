@@ -1424,6 +1424,125 @@ color: green;
 }
  /* Register and Login stops here */
 
+ .AccountPage {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.AccountPageTitle {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.AccountTabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+  justify-content: space-around;
+}
+
+.AccountTab {
+  padding: 10px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.AccountTab.active {
+  border-bottom: 2px solid #007bff;
+  color: #007bff;
+}
+
+.Accounticon {
+  margin-right: 8px;
+}
+
+.Accountcard {
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.AccountCardHeader {
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.AccountCardTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.AccountTabContent {
+  padding: 15px;
+}
+
+.AccountInfoList p {
+  margin: 10px 0;
+}
+
+.Accountorder-list, .Accountpayment-list, .Accountsettings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.Accountorder-item, .Accountpayment-item, .Accountsettings-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Accountorder-number, .Accountcard-number {
+  font-weight: bold;
+}
+
+.Accountorder-date, .Accountcard-expiry {
+  font-size: 14px;
+  color: #666;
+}
+
+.AccountHistoryList{
+display: flex;
+justify-content: space-evenly;
+flex-wrap: wrap;
+}
+
+.AccountBtn {
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+
+
+.AccountBtnOutline {
+  background-color: white;
+  color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.AccountLogoutBtn {
+  margin-top: 20px;
+}
+
+.Accountpayment-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+ /* Accont css stops here */
+
  footer{
   padding: 3px;
   background: #1508ce;
