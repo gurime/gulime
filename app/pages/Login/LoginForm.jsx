@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import { RiseLoader } from 'react-spinners';
-import it from '../../img/gulime.png'
+import it from '../../img/gulime_g.png'
 import { auth } from '../../Config/firebase';
 
 export default function LoginForm() {
@@ -44,30 +44,44 @@ export default function LoginForm() {
     <>
       <div className='contribute-box'>
         <div className='contribute-leftbox' style={{ marginBottom: '10rem' }}>
-          <Image style={{ backgroundColor: '#1508ce', padding: '20px', cursor: 'none' }} src={it} alt='...' />
+          <Image style={{  padding: '20px', cursor: 'none' }} src={it} alt='...' />
 
-          <form style={{width:'35rem'}} className='formbox' onSubmit={handleLogin}>
-            <label htmlFor='email'>Email</label>
-            <input
-              type='email'
-              id='email'
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                validateInputs();
-              }}
-            />
+          <form  className='formbox' onSubmit={handleLogin}>
+          <div className='input-row'>
 
-            <label htmlFor='password'>Password</label>
-            <input
-              type='password'
-              id='password'
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                validateInputs();
-              }}
-            />
+<div className='input-group'>
+  <label htmlFor='email'>Email</label>
+  <input
+    type='email'
+    id='email'
+    value={email}
+    onChange={(e) => {
+      setEmail(e.target.value);
+      validateInputs();
+    }}
+    required
+    maxLength={254}
+    title="Please enter a valid email address"
+  />
+</div>
+
+<div className='input-group'>
+  <label htmlFor='password'>Password</label>
+  <input
+    type='password'
+    id='password'
+    value={password}
+    onChange={(e) => {
+      setPassword(e.target.value);
+      validateInputs();
+    }}
+    required
+    minLength={8}
+    maxLength={100}
+    title="Password must be between 8 and 100 characters long and include symbols and numbers"
+  />
+</div>
+</div>
             <div
               className='payment-title'
               style={{

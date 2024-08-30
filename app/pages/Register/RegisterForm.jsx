@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react'
 import {  DotLoader } from 'react-spinners';
-import it from '../../img/gulime.png'
+import it from '../../img/gulime_g.png'
 import { auth, db } from '../../Config/firebase';
 
 export default function RegisterForm() {
@@ -17,6 +17,8 @@ export default function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phone, setPhone] = useState('');
+  const [address, setAddress] = useState('');
   const [errorState, setErrorState] = useState(null);
   const [isInputValid, setIsInputValid] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState('Weak');
@@ -35,7 +37,9 @@ export default function RegisterForm() {
         firstName,
         lastName,
         email,
-        password
+        password,
+        phone,
+        address
       });
       router.push('/');
     } catch (error) {
@@ -77,83 +81,124 @@ export default function RegisterForm() {
   return (
     <>
       <div className='contribute-box'>
-        <div className='contribute-leftbox'>
-          <Image style={{ backgroundColor: '#1508ce', padding: '20px', cursor: 'none' }} src={it} alt='...' />
+<div className='contribute-leftbox'>
+          <Image style={{  padding: '20px', cursor: 'none' }} src={it} alt='...' />
  
-          <form style={{ width: '30rem' }} className='formbox' onSubmit={handleRegister}>
-            <div className='error'>{errorState && <p className='error-message'>{errorState}</p>}</div>
- 
-            {errorState && errorState.includes('email') && (
-              <p className='error-message'>{errorState}</p>
-            )}
-            <label htmlFor='fname'>First Name</label>
-            <input
-              type='text'
-              id='fname'
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              required
-              maxLength={50}
-            />
- 
-            <label htmlFor='lname'>Last Name</label>
-            <input
-              type='text'
-              id='lname'
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              required
-              maxLength={50}
-            />
- 
-            <label htmlFor='email'>Email</label>
-            <input
-              type='email'
-              id='email'
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                validateInputs();
-              }}
-              required
-              maxLength={254}
-              title="Please enter a valid email address"
-            />
- 
-            <label htmlFor='password'>Password</label>
-            <input
-              type='password'
-              id='password'
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                validateInputs();
-                checkPasswordStrength(e.target.value);
-              }}
-              required
-              minLength={8}
-              maxLength={100}
-              title="Password must be between 8 and 100 characters long and include symbols and numbers"
-            />
- 
-            {/* Password strength indicator */}
-            <div className={`password-strength ${passwordStrength.toLowerCase()}`}>
-              <span>Password Strength: {passwordStrength}</span>
-            </div>
-            <div
-              className="payment-title"
-              style={{
-                display: 'flex',
-                justifyContent: 'center'
-              }}
-            >
-              <p><Link href='/pages/Login'>Already Have An Account</Link></p>
-            </div>
-            <div className='error'>{errorState && <p>{errorState}</p>}</div>
-            <button type='submit' disabled={!isInputValid || isLoading}>
-              {isLoading ? <DotLoader color='#fff' /> : 'Register'}
-            </button>
-          </form>
+          <form  className='formbox' onSubmit={handleRegister}>
+  <div className='error'>
+    {errorState && <p className='error-message'>{errorState}</p>}
+  </div>
+
+  {errorState && errorState.includes('email') && (
+    <p className='error-message'>{errorState}</p>
+  )}
+
+  <div className='input-row'>
+    <div className='input-group'>
+      <label htmlFor='fname'>First Name</label>
+      <input
+        type='text'
+        id='fname'
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        required
+        maxLength={50}
+      />
+    </div>
+    <div className='input-group'>
+      <label htmlFor='lname'>Last Name</label>
+      <input
+        type='text'
+        id='lname'
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        required
+        maxLength={50}
+      />
+    </div>
+  </div>
+
+  <div className='input-row'>
+  <div className='input-group'>
+    <label htmlFor='phone'>Phone Number</label>
+    <input
+      type='text'
+      id='phone'
+      value={phone}
+      onChange={(e) => setPhone(e.target.value)}
+      placeholder="Please Enter Your Phone Number"
+      required
+    />
+</div>
+  <div className='input-group'>
+    <label htmlFor='address'>Address</label>
+    <input
+      type='text'
+      id='address'
+      value={address}
+      placeholder="Please Enter Your Address"
+      onChange={(e) => setAddress(e.target.value)}
+      required
+    />
+  </div>
+</div>
+<div className='input-row'>
+
+  <div className='input-group'>
+    <label htmlFor='email'>Email</label>
+    <input
+      type='email'
+      id='email'
+      value={email}
+      onChange={(e) => {
+        setEmail(e.target.value);
+        validateInputs();
+      }}
+      required
+      maxLength={254}
+      title="Please enter a valid email address"
+    />
+  </div>
+
+  <div className='input-group'>
+    <label htmlFor='password'>Password</label>
+    <input
+      type='password'
+      id='password'
+      value={password}
+      onChange={(e) => {
+        setPassword(e.target.value);
+        validateInputs();
+        checkPasswordStrength(e.target.value);
+      }}
+      required
+      minLength={8}
+      maxLength={100}
+      title="Password must be between 8 and 100 characters long and include symbols and numbers"
+    />
+  </div>
+</div>
+  <div className={`password-strength ${passwordStrength.toLowerCase()}`}>
+    <span>Password Strength: {passwordStrength}</span>
+  </div>
+
+  <div
+    className="payment-title"
+    style={{
+      display: 'flex',
+      justifyContent: 'center'
+    }}
+  >
+    <p><Link href='/pages/Login'>Already Have An Account</Link></p>
+  </div>
+
+  <div className='error'>{errorState && <p>{errorState}</p>}</div>
+
+  <button type='submit' disabled={!isInputValid || isLoading}>
+    {isLoading ? <DotLoader color='#fff' /> : 'Register'}
+  </button>
+</form>
+
         </div>
  
         <div className='contribute-rightbox'>
