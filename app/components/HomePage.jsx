@@ -48,13 +48,16 @@ minimumFractionDigits: 0,
 maximumFractionDigits: 1,
 }).format(price);
 };
+if (loading) return <div className="loader-container"><RiseLoader color="blue" size={15} />
+</div>;
+
 return (
 <>
 <Carousel items={products}/>
 <div className='hero-grid'>
 {loading ? (
 <div className="loader-container">
-<RiseLoader color="blue" size={15} />
+{/* <RiseLoader color="blue" size={15} /> */}
 </div>
 ) : (
 <>

@@ -29,7 +29,6 @@ const ReviewListing = ({ articleId }) => {
       setReviews(fetchedReviews);
       setLoading(false);
     }, (error) => {
-      console.error("Error fetching reviews:", error);
       setLoading(false);
     });
 

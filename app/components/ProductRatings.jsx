@@ -80,7 +80,7 @@ const ProductRatings = ({ productId }) => {
       setIsnotModalOpen(true);
       return;
     }
-
+  
     const user = auth.currentUser;
     if (user && productId) {
       const db = getFirestore();
@@ -88,13 +88,13 @@ const ProductRatings = ({ productId }) => {
         const userRatingDoc = ratings.find((r) => r.userId === user.uid);
         if (userRatingDoc) {
           await updateDoc(doc(db, "ratings", userRatingDoc.id), {
-            rating,
+            rating: rating, // Ensure we're using the passed rating
           });
-          setRatings(ratings.map(r => r.userId === user.uid ? {...r, rating} : r));
+          setRatings(ratings.map(r => r.userId === user.uid ? {...r, rating: rating} : r));
         } else {
           const newRatingDoc = await addDoc(collection(db, "ratings"), {
             productId,
-            rating,
+            rating: rating, // Ensure we're using the passed rating
             userId: user.uid,
           });
           
@@ -106,20 +106,18 @@ const ProductRatings = ({ productId }) => {
               {
                 id: newRatingDoc.id,
                 productId: productId,
-                rating: rating,
+                rating: rating, // Ensure we're using the passed rating
                 userId: user.uid,
               },
             ]);
           } else {
-            // Handle case where new document doesn't exist
           }
         }
         setUserRating(rating);
+        setRating(rating); // Update the local state
       } catch (error) {
-        // Handle error
       }
     } else {
-      // Handle case where user is not signed in or productId is not available
     }
   };
 
@@ -139,9 +137,8 @@ const ProductRatings = ({ productId }) => {
       try {
         await addDoc(collection(db, "reviews"), {
           productId,
-          rating,
+          rating: rating, 
           reviewText,
-          reviewerName,
           userId: user.uid,
           createdAt: new Date(),
         });
@@ -241,7 +238,7 @@ const ProductRatings = ({ productId }) => {
             </h2>
             
             {showConfirmation ? (
-              <div className="confirmation-message">
+              <div style={{color:'black'}} className="confirmation-message">
                 <p>Thank you for your review.</p>
               </div>
             ) : (

@@ -41,27 +41,32 @@ export default function HomeCarousel() {
 
   return (
     <div className="carousel">
-      {products.map((product, index) => (
-          <div className={`carousel-item ${index === currentIndex ? 'active' : ''}`}>
-            <img 
-              src={currentProduct.featcoverimage} 
-            />
-            <div className="carousel-content">
-              <h2>{currentProduct.title}</h2>
-              <Link href={`/pages/ProductDetails/${currentProduct.id}`}>
+    {products.map((product, index) => (
+      <div 
+        key={product.id}  // Add key prop here
+        className={`carousel-item ${index === currentIndex ? 'active' : ''}`}
+      >
+        <img 
+          src={product.featcoverimage} 
+          alt={product.title}  // Add alt text for accessibility
+        />
+        <div className="carousel-content">
+          <h2>{product.title}</h2>
+          <Link href={`/pages/ProductDetails/${product.id}`}>
             <button className='add-to-cart-btn'>Shop Now</button>
           </Link>
-            </div>
-          </div>
-      ))}
-
-      {/* Navigation Buttons */}
-      <button className="carousel-nav prev" onClick={goToPrevious}>
-        <MoveLeft/> {/* Left arrow */}
-      </button>
-      <button className="carousel-nav next" onClick={goToNext}>
-        <MoveRight/> {/* Right arrow */}
-      </button>
-    </div>
+        </div>
+      </div>
+    ))}
+  
+    {/* Navigation Buttons */}
+    <button className="carousel-nav prev" onClick={goToPrevious}>
+      <MoveLeft/> {/* Left arrow */}
+    </button>
+    <button className="carousel-nav next" onClick={goToNext}>
+      <MoveRight/> {/* Right arrow */}
+    </button>
+  </div>
+  
   );
 }
