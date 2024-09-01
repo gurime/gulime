@@ -188,7 +188,7 @@ export default function Navbar() {
       await signOut(auth);
       router.push('/pages/Login');
     } catch (error) {
-      // Handle error
+      setError("Failed to sign out. Please try again.");
     }
   };
 

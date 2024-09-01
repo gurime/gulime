@@ -108,8 +108,8 @@ return (
 
 </div>
 
-<div  className="nav">
-<Image title='Home Page' style={{marginRight:'auto '}} onClick={() => router.push('/')} src={navlogo} height={36} alt='...'  />
+<div  className="nav ">
+<Image title='Home Page' style={{margin:'auto '}} onClick={() => router.push('/')} src={navlogo} height={36} alt='...'  />
 
 
 

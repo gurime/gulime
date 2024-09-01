@@ -61,10 +61,10 @@ export default function HomeCarousel() {
   
     {/* Navigation Buttons */}
     <button className="carousel-nav prev" onClick={goToPrevious}>
-      <MoveLeft/> {/* Left arrow */}
+      <MoveLeft/> 
     </button>
     <button className="carousel-nav next" onClick={goToNext}>
-      <MoveRight/> {/* Right arrow */}
+      <MoveRight/> 
     </button>
   </div>
   

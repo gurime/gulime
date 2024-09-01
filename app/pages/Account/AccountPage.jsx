@@ -336,125 +336,124 @@ alt={item.title} /> </Link>
 <strong>${cart.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}</strong>
 </div>
 ) : (
-          <p>Your cart is empty.</p>
-        )}
-        <button className="AccountBtn ">Checkout</button>
-      </div>
-    </div>
-  );
+<p>Your cart is empty.</p>
+)}
+<button className="AccountBtn ">Checkout</button>
+</div>
+</div>
+);
 
 
-  const profileContent = (
-    <div className="AccountCard">
-      <div className="AccountCardHeader">
-        <h3 className="AccountCardTitle">Personal Information</h3>
-      </div>
-      <div className="AccountCardContent">
-        <div className="AccountInfoList">
-          <p><strong>First name:</strong> {userData?.firstName || 'Not set'}</p>
-          <p><strong>Last name:</strong> {userData?.lastName || 'Not set'}</p>
-          <p><strong>Email:</strong> {userData?.email || 'Not set'}</p>
-          <p><strong>Phone:</strong> {userData?.phone || 'Not set'}</p>
-          <p><strong>Address:</strong> {userData?.address || 'Not set'}</p>
-        </div>
-        <button className="AccountBtn" onClick={() => setIsEditModalOpen(true)}>Edit Profile</button>
-        {isEditModalOpen && (
-          <EditProfileModal 
-            userData={userData} 
-            onSave={handleEditProfile} 
-            onClose={() => setIsEditModalOpen(false)} 
-          />
-        )}
-      </div>
-    </div>
-  );
+const profileContent = (
+<div className="AccountCard">
+<div className="AccountCardHeader">
+<h3 className="AccountCardTitle">Personal Information</h3>
+</div>
+<div className="AccountCardContent">
+<div className="AccountInfoList">
+<p><strong>First name:</strong> {userData?.firstName || 'Not set'}</p>
+<p><strong>Last name:</strong> {userData?.lastName || 'Not set'}</p>
+<p><strong>Email:</strong> {userData?.email || 'Not set'}</p>
+<p><strong>Phone:</strong> {userData?.phone || 'Not set'}</p>
+<p><strong>Address:</strong> {userData?.address || 'Not set'}</p>
+</div>
+<button className="AccountBtn" onClick={() => setIsEditModalOpen(true)}>Edit Profile</button>
+{isEditModalOpen && (
+<EditProfileModal 
+userData={userData} 
+onSave={handleEditProfile} 
+onClose={() => setIsEditModalOpen(false)} 
+/>
+)}
+</div>
+</div>
+);
 
-  const historyContent = (
-    <div className="AccountCard">
-      <div className="AccountCardHeader">
-        <h3 className="AccountCardTitle">Browsing History</h3>
-      </div>
-      <div className="AccountCardContent">
-        <div className="AccountHistoryList">
-          {browsingHistory.map((product, index) => (
-            <div key={product.id} className="AccountHistoryItem">
-              <p className="AccountHistoryProductName">   
-              <Link href={`/pages/ProductDetails/${product.id}`}>
+const historyContent = (
+<div className="AccountCard">
+<div className="AccountCardHeader">
+<h3 className="AccountCardTitle">Browsing History</h3>
+</div>
+<div className="AccountCardContent">
+<div className="AccountHistoryList">
+{browsingHistory.map((product, index) => (
+<div key={product.id} className="AccountHistoryItem">
+<p className="AccountHistoryProductName">   
+<Link href={`/pages/ProductDetails/${product.id}`}>
 
-                <img 
-                    src={product.coverimage || product.selectedColorUrl}
-                    alt={product.title} 
-                    className='shopping-trends-image' 
-                  />
-                  </Link>
-                  </p>
+<img 
+src={product.coverimage || product.selectedColorUrl}
+alt={product.title} 
+className='shopping-trends-image' 
+/>
+</Link>
+</p>
             
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+</div>
+))}
+</div>
+</div>
+</div>
+);
 
 
 
 
   return (
-    <motion.div 
-    className="AccountPage"
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 0.5 }}
-  >
-    {error && <div className="AccountError">{error}</div>}
-    <div className="AccountTabs">
-      {['profile', 'orders', 'reviews', 'cart', 'history'].map((tab) => (
-        <motion.button
-          key={tab}
-          className={`AccountTab ${activeTab === tab ? 'active' : ''}`}
-          onClick={() => setActiveTab(tab)}
-          variants={tabVariants}
-          initial="inactive"
-          animate={activeTab === tab ? "active" : "inactive"}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          {tab === 'profile' && <User className="icon" />}
-          {tab === 'orders' && <Package className="icon" />}
-          {tab === 'reviews' && <Star className="icon" />}
-          {tab === 'cart' && <ShoppingCart className="icon" />}
-          {tab === 'history' && <Clock className="icon" />}
-          {tab.charAt(0).toUpperCase() + tab.slice(1)}
-        </motion.button>
-      ))}
-    </div>
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={activeTab}
-        className="AccountTabContent"
-        variants={contentVariants}
-        initial="hidden"
-        animate="visible"
-        exit="hidden"
-        transition={{ duration: 0.3 }}
-      >
-        {activeTab === 'profile' && profileContent}
-        {activeTab === 'orders' && ordersContent}
-        {activeTab === 'reviews' && reviewsContent}
-        {activeTab === 'cart' && cartContent}
-        {activeTab === 'history' && historyContent}
-      </motion.div>
-    </AnimatePresence>
-    <motion.button
-      className="AccountBtn AccountBtnOutline AccountLogoutBtn"
-      onClick={handleLogout}
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.95 }}
-    >
-      <LogOut className="icon" /> Log Out
-    </motion.button>
-  </motion.div>
-  );
+<motion.div 
+className="AccountPage"
+initial={{ opacity: 0 }}
+animate={{ opacity: 1 }}
+transition={{ duration: 0.5 }}>
+{error && <div className="AccountError">{error}</div>}
+<div className="AccountTabs">
+{['profile', 'orders', 'reviews', 'cart', 'history'].map((tab) => (
+<motion.button
+key={tab}
+className={`AccountTab ${activeTab === tab ? 'active' : ''}`}
+onClick={() => setActiveTab(tab)}
+variants={tabVariants}
+initial="inactive"
+animate={activeTab === tab ? "active" : "inactive"}
+whileHover={{ scale: 1.05 }}
+whileTap={{ scale: 0.95 }}
+>
+{tab === 'profile' && <User className="icon" />}
+{tab === 'orders' && <Package className="icon" />}
+{tab === 'reviews' && <Star className="icon" />}
+{tab === 'cart' && <ShoppingCart className="icon" />}
+{tab === 'history' && <Clock className="icon" />}
+{tab.charAt(0).toUpperCase() + tab.slice(1)}
+</motion.button>
+))}
+</div>
+<AnimatePresence mode="wait">
+<motion.div
+key={activeTab}
+className="AccountTabContent"
+variants={contentVariants}
+initial="hidden"
+animate="visible"
+exit="hidden"
+transition={{ duration: 0.3 }}
+>
+{activeTab === 'profile' && profileContent}
+{activeTab === 'orders' && ordersContent}
+{activeTab === 'reviews' && reviewsContent}
+{activeTab === 'cart' && cartContent}
+{activeTab === 'history' && historyContent}
+</motion.div>
+</AnimatePresence>
+<motion.button
+className="AccountBtn AccountBtnOutline AccountLogoutBtn"
+onClick={handleLogout}
+whileHover={{ scale: 1.05 }}
+whileTap={{ scale: 0.95 }}
+>
+<LogOut className="icon" /> Log Out
+</motion.button>
+</motion.div>
+);
 };
 
 export default AccountPage;

@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, onSnapshot, getDoc, collection, addDoc } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 export const useCartState = (  
   
@@ -16,6 +17,9 @@ export const useCartState = (
   const [loading, setLoading] = useState(true);
   const [userViewedProducts, setUserViewedProducts] = useState([]);
   const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [confirmationMessage, setConfirmationMessage] = useState('');
+
+  const router = useRouter(); // Add this line
 
   const toggleCategory = (category) => {
     setExpandedCategories(prev => ({ ...prev, [category]: !prev[category] }));
@@ -139,6 +143,88 @@ export const useCartState = (
   }, [cartItems, savedItems, updateFirestoreDocument, setShowConfirmation, updateCartCount]);
 
     // save for later
+
+    // checkout function
+    const handleCheckout = useCallback(async () => {
+      if (cartItems.length === 0) {
+        setConfirmationMessage('Your cart is empty. Add items before checking out.');
+        setShowConfirmation(true);
+        setTimeout(() => setShowConfirmation(false), 3000);
+        return;
+      }
+  
+      if (!currentUser) {
+        router.push('/pages/Login?redirect=checkout');
+        return;
+      }
+  
+      try {
+        const checkoutRef = collection(db, 'checkout');
+        
+        // Use a transaction to ensure data consistency
+        await runTransaction(db, async (transaction) => {
+          // Check inventory levels
+          for (const item of cartItems) {
+            const inventoryRef = doc(db, 'inventory', item.id);
+            const inventoryDoc = await transaction.get(inventoryRef);
+            
+            if (!inventoryDoc.exists()) {
+              throw new Error(`Product ${item.id} not found in inventory.`);
+            }
+            
+            const currentStock = inventoryDoc.data().stock;
+            if (currentStock < item.quantity) {
+              throw new Error(`Not enough stock for ${item.title}`);
+            }
+            
+            // Update inventory
+            transaction.update(inventoryRef, { stock: currentStock - item.quantity });
+          }
+          
+          // Create checkout document
+          const checkoutDoc = await addDoc(checkoutRef, {
+            userId: currentUser.uid,
+            createdAt: new Date(),
+            status: 'pending',
+            items: cartItems.map(item => ({
+              id: item.id || item.itemID,
+              itemID: item.itemID || `${item.id}_${Date.now()}`,
+              quantity: item.quantity,
+              title: item.title || item.cartitle || '',
+              content: item.content || '',
+              price: parseFloat(item.price) || 0,
+              coverimage: item.coverimage || '',
+              category: item.category || '',
+              selectedColor: item.selectedColor || '',
+              selectedColorUrl: item.selectedColorUrl || '',
+              selectedConfiguration: item.selectedConfiguration || '',
+              configurationPrice: parseFloat(item.configurationPrice) || 0,
+              selectedRim: item.selectedRim || '',
+              selectedRimUrl: item.selectedRimUrl || '',
+              rimPrice: parseFloat(item.rimPrice) || 0,
+              basePrice: parseFloat(item.basePrice) || 0,
+              // ... other item properties
+            })),
+            subtotal: cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0),
+            tax: 0, // Calculate tax here if applicable
+            shipping: 0, // Calculate shipping here if applicable
+            total: 0, // Calculate total here
+          });
+          
+          // Redirect to the checkout page with the checkout document ID
+          router.push(`/pages/Checkout/${checkoutDoc.id}`);
+        });
+  
+      } catch (error) {
+        console.error("Error during checkout:", error);
+        setConfirmationMessage(`An error occurred: ${error.message}. Please try again.`);
+        setShowConfirmation(true);
+        setTimeout(() => setShowConfirmation(false), 5000);
+      }
+    }, [cartItems, currentUser, db, router]);
+  
+    return { handleCheckout, showConfirmation, confirmationMessage };
+  
 
 
   useEffect(() => {
@@ -290,6 +376,7 @@ export const useCartState = (
     fetchRecommendations,
     deleteFromSaved,
     addProductToViewed,
-    handleProductView
+    handleProductView,
+    handleCheckout
   };
 };

@@ -197,6 +197,17 @@ body, html {
     .nav-open .navlinks {
       left: 0; /* Slide in when nav is open */
     }
+
+    .sm-navlink{
+      position: relative;
+      background-color: transparent;
+      left: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      flex-direction: row;
+    }
   
     .burger {
       display: block;
@@ -228,7 +239,13 @@ body, html {
     .search-results {
       grid-template-columns: 1fr;
     }
+
+    .sm-navlink{
+      flex-direction: column;
+    }
   }
+      
+
       
  /* navbar stops here */
  .carousel {
@@ -1481,7 +1498,6 @@ align-items: center;}
   border-bottom: 1px solid #ccc;
   margin-bottom: 20px;
   justify-content: space-around;
-  flex-wrap: wrap;
 }
 
 .AccountTab {
@@ -1525,9 +1541,10 @@ align-items: center;}
   padding: 15px;
 }
 
-.AccountInfoList p {
-  margin: 10px 0;
+.AccountInfoList{
+  line-height: 2;
 }
+
 
 .Accountorder-list, .Accountpayment-list, .Accountsettings-list {
   display: flex;
@@ -1581,7 +1598,92 @@ flex-wrap: wrap;
   gap: 10px;
 }
 
+@media(max-width:560px)
+{
+.AccountTabs{
+flex-wrap: wrap;
+}
+
+  .Accountorder-item, .Accountpayment-item, .Accountsettings-item{
+    flex-direction: column;
+  }
+
+  .AccountHistoryList{
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
  /* Accont css stops here */
+ .Checkout-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.Checkout-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.Checkout-info {
+  margin-bottom: 10px;
+}
+
+.Checkout-items {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.Checkout-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.Checkout-itemTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.Checkout-itemDetails {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+@media (min-width: 768px) {
+  .Checkout-itemDetails {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.Checkout-itemInfo p {
+  margin-bottom: 5px;
+}
+
+.Checkout-itemImages img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.Checkout-itemDescription {
+  margin-top: 10px;
+}
+
+.Checkout-totalPrice {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+ /* checkout page stops here */
 
  footer{
   padding: 3px;
