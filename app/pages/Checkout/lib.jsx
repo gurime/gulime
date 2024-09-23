@@ -12,7 +12,6 @@ export async function getCheckout(id) {
       return null;
     }
   } catch (error) {
-    console.error("Error fetching checkout:", error);
     return null;
   }
 }

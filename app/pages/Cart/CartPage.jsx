@@ -158,7 +158,7 @@ alt={`${item.title} - ${item.selectedRim || item.selectedColor || ''}`} />
 
 {cartCount > 0 && (
   <button onClick={handleCheckout} className="checkout-button">
-    Proceed to Checkout
+    Place Order
   </button>
 )}
 

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, doc, setDoc, onSnapshot, getDoc, collection, addDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, onSnapshot, getDoc, collection, addDoc, runTransaction } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 
 export const useCartState = (  
@@ -19,7 +19,7 @@ export const useCartState = (
   const [recommendedProducts, setRecommendedProducts] = useState([]);
   const [confirmationMessage, setConfirmationMessage] = useState('');
 
-  const router = useRouter(); // Add this line
+  const router = useRouter(); 
 
   const toggleCategory = (category) => {
     setExpandedCategories(prev => ({ ...prev, [category]: !prev[category] }));
@@ -152,34 +152,44 @@ export const useCartState = (
         setTimeout(() => setShowConfirmation(false), 3000);
         return;
       }
-  
+    
       if (!currentUser) {
+        console.log("User not logged in, redirecting to login page");
         router.push('/pages/Login?redirect=checkout');
         return;
       }
-  
+    
+      if (!db) {
+        console.error("Firestore database is not initialized");
+        return;
+      }
+    
       try {
         const checkoutRef = collection(db, 'checkout');
+        const productRefs = cartItems.map(item => doc(db, 'products', item.id));
         
-        // Use a transaction to ensure data consistency
         await runTransaction(db, async (transaction) => {
-          // Check inventory levels
-          for (const item of cartItems) {
-            const inventoryRef = doc(db, 'inventory', item.id);
-            const inventoryDoc = await transaction.get(inventoryRef);
-            
-            if (!inventoryDoc.exists()) {
-              throw new Error(`Product ${item.id} not found in inventory.`);
+          // Read phase
+          const productDocs = await Promise.all(productRefs.map(ref => transaction.get(ref)));
+          
+          // Validate products and calculate new stock quantities
+          const updatedStocks = productDocs.map((doc, index) => {
+            if (!doc.exists()) {
+              throw new Error(`Product ${cartItems[index].id} not found in inventory.`);
             }
             
-            const currentStock = inventoryDoc.data().stock;
-            if (currentStock < item.quantity) {
-              throw new Error(`Not enough stock for ${item.title}`);
+            const currentStock = doc.data().stock;
+            if (currentStock < cartItems[index].quantity) {
+              throw new Error(`Not enough stock for ${cartItems[index].title}`);
             }
             
-            // Update inventory
-            transaction.update(inventoryRef, { stock: currentStock - item.quantity });
-          }
+            return { ref: doc.ref, newStock: currentStock - cartItems[index].quantity };
+          });
+          
+          // Write phase
+          updatedStocks.forEach(({ ref, newStock }) => {
+            transaction.update(ref, { stock: newStock });
+          });
           
           // Create checkout document
           const checkoutDoc = await addDoc(checkoutRef, {
@@ -187,89 +197,86 @@ export const useCartState = (
             createdAt: new Date(),
             status: 'pending',
             items: cartItems.map(item => ({
-              id: item.id || item.itemID,
-              itemID: item.itemID || `${item.id}_${Date.now()}`,
-              quantity: item.quantity,
-              title: item.title || item.cartitle || '',
-              content: item.content || '',
-              price: parseFloat(item.price) || 0,
-              coverimage: item.coverimage || '',
-              category: item.category || '',
-              selectedColor: item.selectedColor || '',
-              selectedColorUrl: item.selectedColorUrl || '',
-              selectedConfiguration: item.selectedConfiguration || '',
-              configurationPrice: parseFloat(item.configurationPrice) || 0,
-              selectedRim: item.selectedRim || '',
-              selectedRimUrl: item.selectedRimUrl || '',
-              rimPrice: parseFloat(item.rimPrice) || 0,
-              basePrice: parseFloat(item.basePrice) || 0,
-              // ... other item properties
+            id: item.id || item.itemID,
+            itemID: item.itemID || `${item.id}_${Date.now()}`,
+            quantity: item.quantity,
+            title: item.title || item.cartitle || '',
+            content: item.content || '',
+            price: parseFloat(item.price) || 0,
+            coverimage: item.coverimage || '',
+            category: item.category || '',
+            selectedColor: item.selectedColor || '',
+            selectedColorUrl: item.selectedColorUrl || '',
+            selectedConfiguration: item.selectedConfiguration || '',
+            configurationPrice: parseFloat(item.configurationPrice) || 0,
+            selectedRim: item.selectedRim || '',
+            selectedRimUrl: item.selectedRimUrl || '',
+            rimPrice: parseFloat(item.rimPrice) || 0,
+            basePrice: parseFloat(item.basePrice) || 0,
             })),
             subtotal: cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0),
-            tax: 0, // Calculate tax here if applicable
-            shipping: 0, // Calculate shipping here if applicable
-            total: 0, // Calculate total here
-          });
-          
-          // Redirect to the checkout page with the checkout document ID
+            tax: 0,
+            shipping: 0,
+            total: 0,
+            });
+          console.log("Checkout Document Created:", checkoutDoc.id);
           router.push(`/pages/Checkout/${checkoutDoc.id}`);
         });
-  
       } catch (error) {
-        console.error("Error during checkout:", error);
+        console.error("Checkout error:", error);
         setConfirmationMessage(`An error occurred: ${error.message}. Please try again.`);
         setShowConfirmation(true);
         setTimeout(() => setShowConfirmation(false), 5000);
       }
     }, [cartItems, currentUser, db, router]);
+    
   
-    return { handleCheckout, showConfirmation, confirmationMessage };
   
 
-
-  useEffect(() => {
-    const auth = getAuth();
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      if (user) {
-        const firestore = getFirestore();
-        setDb(firestore);
-        const cartRef = doc(firestore, 'carts', user.uid);
-        const savedRef = doc(firestore, 'saved', user.uid);
-        const unsubscribeCart = onSnapshot(cartRef, (snapshot) => {
-          const cartData = snapshot.data();
-          if (cartData && cartData.items) {
-            const items = cartData.items;
-            setCartItems(items);
-            updateCartCount(items);
-          }
+    useEffect(() => {
+      const auth = getAuth();
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setCurrentUser(user);
+        if (user) {
+          const firestore = getFirestore();
+          setDb(firestore);
+          const cartRef = doc(firestore, 'carts', user.uid);
+          const savedRef = doc(firestore, 'saved', user.uid);
+          
+          const unsubscribeCart = onSnapshot(cartRef, (snapshot) => {
+            const cartData = snapshot.data();
+            if (cartData && cartData.items) {
+              const items = cartData.items;
+              setCartItems(items);
+              updateCartCount(items);
+            }
+            setLoading(false);
+          });
+    
+          const unsubscribeSaved = onSnapshot(savedRef, (snapshot) => {
+            const savedData = snapshot.data();
+            const items = savedData?.items || [];
+            setSavedItems(items);
+            const counts = items.reduce((acc, item) => {
+              const category = item.category;
+              acc[category] = (acc[category] || 0) + 1;
+              return acc;
+            }, {});
+            setCategoryCounts(counts);
+            setLoading(false);
+          });
+    
+          return () => {
+            unsubscribeCart();
+            unsubscribeSaved();
+          };
+        } else {
           setLoading(false);
-        });
-
-        const unsubscribeSaved = onSnapshot(savedRef, (snapshot) => {
-          const savedData = snapshot.data();
-          const items = savedData?.items || [];
-          setSavedItems(items);
-          const counts = items.reduce((acc, item) => {
-            const category = item.category;
-            acc[category] = (acc[category] || 0) + 1;
-            return acc;
-          }, {});
-
-          setCategoryCounts(counts);
-          setLoading(false);
-        });
-        return () => {
-          unsubscribeCart();
-          unsubscribeSaved();
-        };
-      } else {
-        setLoading(false);
-      }
-    });
-
-    return unsubscribe;
-  }, [updateCartCount]);
+        }
+      });
+    
+      return () => unsubscribe();
+    }, [updateCartCount]);
 
   const savedItemsByCategory = useMemo(() => {
     return savedItems.reduce((acc, item) => {
@@ -357,6 +364,9 @@ export const useCartState = (
   }, [fetchRecommendations]);
 
   return {
+    handleCheckout,
+    showConfirmation,
+    confirmationMessage,
     cartItems,
     savedItems,
     currentUser,
