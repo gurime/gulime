@@ -6,7 +6,7 @@ export default function Navbar() {
     <>
     <div className="hidden md:block">
 
-<div className="flex items-center justify-center  bg-green-600">
+<div className="flex items-center justify-center  bg-[#1547A0]">
        <Image src='/images/gulime.png'
  loading="eager"
 priority alt="Gulime Logo"   
