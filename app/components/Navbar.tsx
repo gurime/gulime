@@ -124,7 +124,7 @@ className="w-full px-4 py-3 rounded-l-lg text-gray-800 bg-white focus:outline-no
     <ChevronDown size={16} />
   </button>
 
-  <div className="absolute left-0 mt-2 w-[800px] bg-blue-900 text-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg p-4 grid grid-cols-5 gap-4 z-50">
+  <div className="absolute left-0 mt-2 w-200 bg-blue-900 text-blue-200 opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg p-4 grid grid-cols-5 gap-4 z-50">
     {/* Smartphones */}
     <div>
       <h4 className="font-semibold mb-2 text-white">Smartphones</h4>
