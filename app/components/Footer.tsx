@@ -45,6 +45,7 @@ Subscribe
 {/* Brand Section */}
 <div className="md:col-span-1">
 <div
+className='mb-4'
 onClick={scrollToTop}
 title="Back To Top"
 
@@ -52,7 +53,7 @@ title="Back To Top"
 <Image src='/images/gulime.png'
 loading="eager"
 priority alt="Gulime Logo"   
-width={200} height={200}
+width={150} height={150}
 
 
 
