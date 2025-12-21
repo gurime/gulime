@@ -96,36 +96,22 @@ return;
 }
 
 try {
-const { data, error } = await supabase.auth.signUp({
+// OPTIMIZATION: Pass metadata directly in signUp options
+const { error } = await supabase.auth.signUp({
 email,
 password,
 options: {
 data: {
 full_name: fullName,
 },
+emailRedirectTo: `${window.location.origin}/auth/callback`, // Add this
 },
 });
 
 if (error) throw error;
 
-// Insert into profiles table
-if (data.user) {
-const { error: profileError } = await supabase
-.from('profiles')
-.insert({
-id: data.user.id,
-full_name: fullName,
-email: data.user.email,
-});
-
-if (profileError) {
-console.error('Error creating profile:', profileError);
-// Don't throw - the user account was created successfully
-}
-}
-
 toast.success(
-"Account created! Please check your email to verify your account."
+"Account created! Welcome to Gulime."
 );
 
 // Clear form
@@ -133,18 +119,19 @@ setFullName("");
 setEmail("");
 setPassword("");
 setConfirmPassword("");
-setIsLogin(true);
-router.push("/")
+
+router.push("/"); // Redirect to home after signup
 } catch (error: unknown) {
 if (typeof error === "object" && error !== null && "message" in error) {
-setError((error as { message?: string }).message || "An error occurred during signup");
+setError((error as { message?: string }).message || "An error occurred while sending reset email");
 } else {
-setError("An error occurred during signup");
+setError("An error occurred while sending reset email");
 }
 } finally {
 setLoading(false);
 }
 };
+
 
 // Prevent rendering the form until we know the user isn't logged in
 if (initialLoading) {
@@ -170,7 +157,7 @@ priority/>
 </Link>
 
 <h1 className="text-3xl font-bold text-white mb-2">
-{isLogin ? "Welcome Back" : "Join Gulime"}
+{isLogin ? "Welcome Back" : "Join Gulime Today"}
 </h1>
 <p className="text-white text-sm">
 {isLogin
@@ -247,7 +234,7 @@ onChange={(e) => setFullName(e.target.value)}
 required
 onFocus={() => setError("")}
 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-gray-900"
-placeholder="John Doe"
+placeholder="Your full name"
 />
 </div>
 )}

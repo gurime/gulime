@@ -17,38 +17,43 @@ const [activeSubAccordion, setActiveSubAccordion] = useState<string | null>(null
 const [searchQuery, setSearchQuery] = useState('');
 const [user, setUser] = useState<User | null>(null);
 const [isLoading, setIsLoading] = useState(true);
+const [isPremium, setIsPremium] = useState(false);
+
 const [email, setEmail] = useState('');
-const [firstname, setFirstName] = useState('');
+const [firstName, setFirstName] = useState("");
+const [lastName, setLastName] = useState("");
 const router = useRouter();
+
+useEffect(() => {
+setTimeout(() => setIsLoading(false), 1000);
+}, []);
+
+
 
 useEffect(() => {
 let mounted = true;
 
 const loadProfile = async () => {
-const {
-data: { session },
-} = await supabase.auth.getSession();
-
-if (!mounted) return;
-
+const { data: { session } } = await supabase.auth.getSession();
 const currentUser = session?.user ?? null;
 setUser(currentUser);
 
 if (currentUser) {
 const { data: profileData, error } = await supabase
 .from("profiles")
-.select("full_name, email")
+.select("full_name, email, ispremium")
 .eq("id", currentUser.id)
 .single();
 
-if (!mounted) return;
-
 if (!error && profileData) {
-// If full_name contains first + last, extract first name
-const firstName = profileData.full_name?.split(" ")[0] ?? "";
+const parts = (profileData.full_name || "").trim().split(" ");
+const first = parts[0] || "";
+const last = parts.length > 1 ? parts[parts.length - 1] : "";
 
-setFirstName(firstName);
+setFirstName(first);
+setLastName(last);
 setEmail(profileData.email);
+setIsPremium(profileData.ispremium || false); // Add fallback
 }
 }
 
@@ -60,8 +65,35 @@ loadProfile();
 // Listen for login/logout changes
 const {
 data: { subscription },
-} = supabase.auth.onAuthStateChange((_event, session) => {
-setUser(session?.user ?? null);
+} = supabase.auth.onAuthStateChange(async (_event, session) => {
+const currentUser = session?.user ?? null;
+setUser(currentUser);
+
+// Re-fetch profile data when user logs in
+if (currentUser && mounted) {
+const { data: profileData, error } = await supabase
+.from("profiles")
+.select("full_name, email, ispremium")
+.eq("id", currentUser.id)
+.single();
+
+if (!error && profileData) {
+const parts = (profileData.full_name || "").trim().split(" ");
+const first = parts[0] || "";
+const last = parts.length > 1 ? parts[parts.length - 1] : "";
+
+setFirstName(first);
+setLastName(last);
+setEmail(profileData.email);
+setIsPremium(profileData.ispremium || false);
+}
+} else {
+// Clear profile data when user logs out
+setFirstName("");
+setLastName("");
+setEmail("");
+setIsPremium(false);
+}
 });
 
 return () => {
@@ -104,16 +136,31 @@ return (
 <div className="container mx-auto px-4 py-4">
 <div className="flex items-center justify-between gap-4">
 {/* Logo */}
-<Link href="/" className="flex items-center gap-2">
-<Image src='/images/gulime.png'
+{isPremium ? (
+<div className="relative w-70 h-12.5">
+<Image 
+src="/images/gulimepremium.png" 
+alt="Premium" 
 loading="eager"
-priority alt="Gulime Logo"   
-width={150} height={100}
-
-
-
+priority  
+fill
+className="object-contain"
 />
+</div>
+) : (
+<Link href="/" className="flex items-center gap-2">
+<div className="relative w-37.5 h-12.5">
+<Image 
+src='/images/gulime.png'
+loading="eager"
+priority 
+alt="Gulime Logo"   
+fill
+className="object-contain"
+/>
+</div>
 </Link>
+)}
 
 {/* Search Bar - Desktop */}
 <div className="hidden md:flex flex-1 max-w-2xl mx-8">
@@ -131,7 +178,6 @@ className="w-full px-4 py-3 rounded-l-lg text-gray-800 bg-white focus:outline-no
 </div>
 </div>
 
-
 {/* Right Icons */}
 <div className="hidden md:flex items-center gap-6">
 {user ? (
@@ -141,19 +187,20 @@ className="w-full px-4 py-3 rounded-l-lg text-gray-800 bg-white focus:outline-no
 onClick={() => toggleDropdown('account')}
 className="flex items-center gap-2 hover:text-blue-200 transition-colors cursor-pointer"
 >
-<UserIcon size={24} />
+<div className="flex items-center gap-2">
 <div className="flex flex-col items-start">
-<span className="text-xs">Hello, {firstname}</span>
-<span className="font-medium flex items-center gap-1">
-Account
+<span className="text-xs">
+{isPremium ? '✨ Gulime Premium' : 'Member'}
+</span>
+<span className="font-medium">{firstName} {lastName}</span>
+</div>
+</div>
 <ChevronDown
 size={14}
 className={`transition-transform duration-300 ${
 activeDropdown === 'account' ? 'rotate-180' : ''
 }`}
 />
-</span>
-</div>
 </button>
 
 <AnimatePresence>
@@ -167,7 +214,30 @@ className="absolute -right-23 mt-2 w-64 bg-white text-gray-800 shadow-lg rounded
 >
 <div className="p-4 border-b">
 <p className="text-sm text-gray-600">{email}</p>
+{isPremium && (
+<div className="flex items-center gap-1 mt-1">
+<Image src="/images/gulimepremium.png" alt="Premium" width={16} height={16} />
+<span className="text-xs font-semibold text-yellow-600">Premium Member</span>
 </div>
+)}
+</div>
+{!isPremium && (
+<div className="p-4 bg-linear-to-r from-yellow-50 to-orange-50 border-b">
+<div className="flex items-center gap-2 mb-2">
+<Image src="/images/gulimepremium.png" alt="Premium" width={28} height={28} />
+<div>
+<p className="font-semibold text-gray-800 text-sm">Upgrade to Premium</p>
+<p className="text-xs text-gray-600">Free shipping & exclusive deals</p>
+</div>
+</div>
+<Link 
+href="/premium" 
+className="block w-full bg-linear-to-r from-yellow-400 to-orange-500 text-white text-center py-2 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all font-medium text-sm"
+>
+Start Free Trial
+</Link>
+</div>
+)}
 <div className="py-2">
 <Link
 href="/account"
@@ -230,9 +300,9 @@ className="flex items-center gap-2 hover:text-blue-200 transition-colors cursor-
 >
 <UserIcon size={24} />
 <div className="flex flex-col items-start">
-<span className="text-xs">Hello, Sign in</span>
+<span className="text-xs">Ready to save?</span>
 <span className="font-medium flex items-center gap-1">
-Account
+Try Premium
 <ChevronDown
 size={14}
 className={`transition-transform duration-300 ${
@@ -252,6 +322,21 @@ exit={{ opacity: 0, y: -10, scale: 0.95 }}
 transition={{ duration: 0.2, ease: 'easeOut' }}
 className="absolute -right-23 mt-2 w-72 bg-white text-gray-800 shadow-lg rounded-lg overflow-hidden z-50"
 >
+<div className="p-6 bg-linear-to-r from-yellow-50 to-orange-50 border-b">
+<div className="flex items-center gap-3 mb-3">
+<Image src="/images/gulimepremium.png" alt="Premium" width={40} height={40} />
+<div>
+<p className="font-bold text-gray-800">Gulime Premium</p>
+<p className="text-xs text-gray-600">Free shipping, exclusive deals & more</p>
+</div>
+</div>
+<Link
+href="/login?redirect=premium"
+className="block w-full bg-linear-to-r from-yellow-400 to-orange-500 text-white text-center py-2 rounded-lg hover:from-yellow-500 hover:to-orange-600 transition-all font-medium mb-2"
+>
+Start Free Trial
+</Link>
+</div>
 <div className="p-6">
 <Link
 href="/login"
@@ -683,7 +768,7 @@ className="w-full flex items-center justify-between py-2 hover:text-blue-200"
 <div className="flex items-center gap-2">
 <UserIcon size={20} />
 <div className="flex flex-col items-start">
-<span className="text-xs">Hello, {firstname}</span>
+<span className="text-xs">Hello, {firstName} {lastName}</span>
 <span className="font-medium">Account</span>
 </div>
 </div>
