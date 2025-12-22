@@ -137,6 +137,7 @@ return (
 <div className="flex items-center justify-between gap-4">
 {/* Logo */}
 {isPremium ? (
+<Link href="/premium">
 <div className="relative w-70 h-12.5">
 <Image 
 src="/images/gulimepremium.png" 
@@ -147,6 +148,7 @@ fill
 className="object-contain"
 />
 </div>
+</Link>
 ) : (
 <Link href="/" className="flex items-center gap-2">
 <div className="relative w-37.5 h-12.5">
@@ -170,7 +172,7 @@ type="text"
 placeholder="Search Gulime..."
 value={searchQuery}
 onChange={(e) => setSearchQuery(e.target.value)}
-className="w-full px-4 py-3 rounded-l-lg text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+className="w-full px-4 py-3  text-gray-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-300"
 />
 <button className="absolute right-0 top-0 h-full px-6 bg-blue-500 hover:bg-orange-600  transition-colors cursor-pointer">
 <Search size={20} />
@@ -270,7 +272,7 @@ onClick={async () => {
 await supabase.auth.signOut();
 router.push('/');
 }}
-className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-red-600"
+className="block w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors text-red-600 cursor-pointer"
 >
 Sign Out
 </button>
