@@ -70,23 +70,23 @@ setLoading(true);
 
 // Fetch featured products for carousel
 const { data: featured, error: featuredError } = await supabase
-.from("dashboard_products")
-.select("*")
-.eq("is_featured", true)
-.eq("status", "active")
-.limit(5);
+  .from("dashboard_products")
+  .select("*")
+  .eq("featured", true)
+  .eq("is_active", true)
+  .limit(5);
+
 
 if (featuredError) throw featuredError;
 setFeaturedProducts(featured || []);
 
 // Fetch all products
 const { data, error: productsError } = await supabase
-.from("dashboard_products")
-.select("*")
-.eq("status", "active")
-.order("created_at", { ascending: false })
-.limit(20);
-
+  .from("dashboard_products")
+  .select("*")
+  .eq("is_active", true)
+  .order("created_at", { ascending: false })
+  .limit(20);
 if (productsError) throw productsError;
 setProducts(data || []);
 } catch (err) {

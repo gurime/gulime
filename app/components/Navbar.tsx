@@ -36,6 +36,9 @@ let mounted = true;
 const loadProfile = async () => {
 const { data: { session } } = await supabase.auth.getSession();
 const currentUser = session?.user ?? null;
+
+if (!mounted) return;
+
 setUser(currentUser);
 
 if (currentUser) {
@@ -53,8 +56,14 @@ const last = parts.length > 1 ? parts[parts.length - 1] : "";
 setFirstName(first);
 setLastName(last);
 setEmail(profileData.email);
-setIsPremium(profileData.ispremium || false); // Add fallback
+setIsPremium(profileData.ispremium || false);
 }
+} else {
+// Clear profile data when no user
+setFirstName("");
+setLastName("");
+setEmail("");
+setIsPremium(false);
 }
 
 setIsLoading(false);
@@ -62,15 +71,17 @@ setIsLoading(false);
 
 loadProfile();
 
-// Listen for login/logout changes
+// Listen for login/logout changes AND profile updates
 const {
 data: { subscription },
 } = supabase.auth.onAuthStateChange(async (_event, session) => {
+if (!mounted) return;
+
 const currentUser = session?.user ?? null;
 setUser(currentUser);
 
-// Re-fetch profile data when user logs in
-if (currentUser && mounted) {
+// Re-fetch profile data when user logs in or session changes
+if (currentUser) {
 const { data: profileData, error } = await supabase
 .from("profiles")
 .select("full_name, email, ispremium")
@@ -101,6 +112,8 @@ mounted = false;
 subscription.unsubscribe();
 };
 }, []);
+
+
 
 
 const toggleDropdown = (dropdown: string) => {
@@ -137,7 +150,7 @@ return (
 <div className="flex items-center justify-between gap-4">
 {/* Logo */}
 {isPremium ? (
-<Link href="/premium">
+<Link href="/">
 <div className="relative w-70 h-12.5">
 <Image 
 src="/images/gulimepremium.png" 
